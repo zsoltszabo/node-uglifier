@@ -1,0 +1,51 @@
+{
+    "name": "timestamp-grabber",
+    "description": "Convert a very wide variety of human readable date/time formats to unix timestamp in millis. Supports all major timezones thanks to timezonejs",
+    "version": "0.0.1",
+    "homepage": "https://github.com/zsoltszabo/timestamp-grabber",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/zsoltszabo/timestamp-grabber.git"
+    },
+    "author": {
+        "name": "Zsolt Istvan Szabo",
+        "email": "zsoltszabo@web.de"
+    },
+    "url": "https://github.com/zsoltszabo/timestamp-grabber",
+    "keywords": [
+        "time",
+        "timezone",
+        "date",
+        "tzdata",
+        "utc",
+        "gmt",
+        "datetime",
+        "tz",
+        "format",
+        "events",
+        "calendar",
+        "strftime",
+        "parse",
+        "unix",
+        "timestamp"
+    ],
+    "contributors": [],
+    "dependencies": {
+        "sugar": ">=1.4.1",
+        "underscore": ">=1.5.2",
+        "timezone": ">=0.x"
+    },
+    "devDependencies": {
+        "uglify-js": "~1.3",
+        "nodeunit": ">=0.x"
+    },
+    "engines": {
+        "node": "> 0.6.0"
+    },
+    "main": "./index.js",
+    "scripts": {
+        "test": "node test_compiled/timestampGrabber_test.js"
+    },
+    "readmeFilename": "README.md",
+    "_id": "timestamp@0.0.1"
+}
