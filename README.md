@@ -14,7 +14,7 @@ how it works
 
 Here is how it works. There are 2 public methods as you can see in the following tests. You will most likely use parse, that gives you the unix timestamp in millis.
 
-* ts = require("timestampGrabber")
+* ts = require("timestamp-grabber")
 * console.log(ts.parse("1/22/14 10:23:01.001 PM *", "M D Y HH:mm:ss.fff tt", "America/New_York"))
 * ->1390447381001
 
