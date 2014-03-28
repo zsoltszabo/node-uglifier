@@ -7,6 +7,39 @@ ts = require("../lib_compiled/timestampGrabber")
 
 test=()->
 
+  #bitstamp
+#  Timestamp.parse(data.datetime, "", "Etc/GMT")
+  #twitter
+  result=ts.parseDate("2014-05-08 20:24:06.400","YYYY-MM-DD HH:mm:ss.fff",false)
+  eq(result.Y,2014)
+  eq(result.M,5)
+  eq(result.D,8)
+  eq(result.H,20)
+  eq(result.m,24)
+  eq(result.s,6)
+  eq(result.f,400)
+
+  result=ts.parseDate("Tue May 08 20:24:06 +0000 2014","w MMM DD HH:mm:ss +oooo YYYY",false)
+  eq(result.Y,2014)
+  eq(result.MMM,5)
+  eq(result.D,8)
+  eq(result.H,20)
+  eq(result.m,24)
+  eq(result.s,6)
+  eq(result.f,undefined)
+
+  #twitter
+  result=ts.parseDate("May 08 20:24:06 +0000 2014","MMM DD HH:mm:ss +oooo YYYY",false)
+  eq(result.Y,2014)
+  eq(result.MMM,5)
+  eq(result.D,8)
+  eq(result.H,20)
+  eq(result.m,24)
+  eq(result.s,6)
+  eq(result.f,undefined)
+
+
+
   result=ts.parseDate("1994-1-2T11:3:4.600 PM") #T11:03:04.666 PM
   eq(result.Y,1994)
   eq(result.M,1)

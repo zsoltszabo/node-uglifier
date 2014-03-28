@@ -21,9 +21,11 @@ _patterns = {
   date_date: "[-|//|\\s|,]*"
   time_time: "[:]"
   date_time: "[T|\\s]"
-  undefined: "[-|//|\\s]*"  #optional
+  undefined: "[-|//|\\s|,]*"  #optional
   f: "(\.[0-9]{1,3})?" #optional
   t: "(?:[\\s])?([\\w]{2})?" #optional
+  o: "([\-|\+][0-9]{1,4})"
+  w: "([\\w]*)"
 }
 #patternConstucted=new RegExp(yearP+dateConnP+MDHmP+dateConnP+MDHmP+dateTimeConnP+MDHmP+timeConnP+MDHmP+secP+milliP+dayTimeP,"m")
 
@@ -49,11 +51,15 @@ getPatternPositions = (pattern)->
       when "s" then group = "time_optional"
       when "f" then group = "milli_optional"
       when "t" then group = "timeOfDay_optional"
+      when "+","-" then group = "offset"
+      when "w" then group = "word"
     if group is undefined
       positions[i] = {"type": patternSplit[i], "len": patternSplit[i].length, "group": group}
     else
       if patternSplit[i]=="MMM"
         positions[i] = {"type": patternSplit[i], "len": patternSplit[i].length, "group": group}
+      else if patternSplit[i].charAt(0)=="+" || patternSplit[i].charAt(0)=="-"
+        positions[i] = {"type": patternSplit[i].charAt(1), "len": patternSplit[i].length, "group": group}
       else
         positions[i] = {"type": patternSplit[i].charAt(0), "len": patternSplit[i].length, "group": group}
   return positions
@@ -61,6 +67,7 @@ getPatternPositions = (pattern)->
 #input like [{"type":Y,"len":4,"group":"date|time|milli|timeOfDay"},...]
 constructPattern = (patternPositions)->
   rString = ""
+  NEUTRAL=["offset","word"]
   for i in [0..patternPositions.length - 1]
     if  _.isUndefined(patternPositions[i].group)
       rString = rString + "(" + patternPositions[i].type + ")"
@@ -69,7 +76,7 @@ constructPattern = (patternPositions)->
     if i < patternPositions.length - 1
       groupCurr = patternPositions[i].group
       groupNext = patternPositions[i + 1].group
-      if _.isUndefined(groupCurr)||_.isUndefined(groupNext)
+      if _.isUndefined(groupCurr)||_.isUndefined(groupNext)||groupNext in NEUTRAL ||groupCurr in NEUTRAL
         rString = rString + _patterns["undefined"]
       else
         if _patterns[groupCurr + "_" + groupNext]
@@ -80,7 +87,8 @@ constructPattern = (patternPositions)->
 parseDate = (dateIsoish, pattern = "YYYY/MM/DD HH:mm:ss.fff tt", strictMode = false) ->
   paternPositions = getPatternPositions(pattern)
   #  console.log(paternPositions[1].type)
-  dateIsoishCleanedArr = dateIsoish.match(constructPattern(paternPositions))
+  constructed=constructPattern(paternPositions)
+  dateIsoishCleanedArr = dateIsoish.match(constructed)
   if dateIsoishCleanedArr
     dateIsoishCleanedArr.removeAt(0)
   #find non ambigous parts
