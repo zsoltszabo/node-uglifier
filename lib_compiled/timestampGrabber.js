@@ -180,6 +180,9 @@
           case "M":
             r[typeShouldBe] = parseInt(dateIsoishCleanedArr[i]);
             break;
+          case "o":
+            r[typeShouldBe] = parseInt(dateIsoishCleanedArr[i]);
+            break;
           default:
             r[typeShouldBe] = parseInt(dateIsoishCleanedArr[i]);
         }
@@ -214,21 +217,33 @@
   };
 
   parse = function(dateIsoish, pattern, continentCitiy, strictMode) {
-    var city, continent, continentCities, dateParsed, day, hour, milliSecond, minute, month, monthRaw, r, second;
+    var city, continent, continentCities, dateParsed, day, hour, milliSecond, minute, month, monthRaw, r, second, sign;
     if (pattern == null) {
       pattern = "YYYY/MM/DD HH:mm:ss.fff tt";
+    }
+    if (continentCitiy == null) {
+      continentCitiy = null;
     }
     if (strictMode == null) {
       strictMode = false;
     }
-    continentCities = continentCitiy.split(/[/ /]|[-]|[T]|[\s]+|[\.]|[:]/);
-    continent = continentCities[0].trim();
-    city = continentCities[1].trim();
+    dateParsed = parseDate(dateIsoish, pattern, strictMode);
+    if (continentCitiy == null) {
+      if (dateParsed.o == null) {
+        throw new TypeError("either offset or continent city must be defined for timezone");
+      }
+      continent = "Etc";
+      sign = dateParsed.o > 0 ? "+" : "";
+      city = "GMT" + sign + dateParsed.o.toString();
+    } else {
+      continentCities = continentCitiy.split(/[ \/]|[\s]+|[:]/);
+      continent = continentCities[0].trim();
+      city = continentCities.length === 2 ? continentCities[1].trim() : continentCities[1].trim() + continentCities[2].trim();
+    }
     if (ContinentsLoaded[continent] === void 0) {
       console.log("timestamp loded: " + continent);
       ContinentsLoaded[continent] = tz(new require("timezone/" + continent));
     }
-    dateParsed = parseDate(dateIsoish, pattern, strictMode);
     monthRaw = dateParsed["M"] || dateParsed["MMM"];
     month = Timestamp.pad(monthRaw.toString(), 2);
     day = Timestamp.pad(dateParsed["D"].toString(), 2);

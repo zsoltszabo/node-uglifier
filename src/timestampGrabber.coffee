@@ -125,6 +125,8 @@ parseDate = (dateIsoish, pattern = "YYYY/MM/DD HH:mm:ss.fff tt", strictMode = fa
           r[typeShouldBe] = _MONTHS3_ENG.indexOf(dateIsoishCleanedArr[i].toLowerCase())+1
         when "M"
           r[typeShouldBe] = parseInt(dateIsoishCleanedArr[i])
+        when "o"
+          r[typeShouldBe] = parseInt(dateIsoishCleanedArr[i])
         else
           r[typeShouldBe] = parseInt(dateIsoishCleanedArr[i])
 
@@ -147,16 +149,25 @@ Timestamp.pad = (n, width, z="0")->
   return if n.length >= width then n else new Array(width - n.length + 1).join(z) + n
 
 
-parse = (dateIsoish, pattern = "YYYY/MM/DD HH:mm:ss.fff tt", continentCitiy, strictMode = false)->
-  continentCities = continentCitiy.split((/[/ /]|[-]|[T]|[\s]+|[\.]|[:]/))
-  continent = continentCities[0].trim()
-  city = continentCities[1].trim()
+parse = (dateIsoish, pattern = "YYYY/MM/DD HH:mm:ss.fff tt", continentCitiy=null, strictMode = false)->
+
+  dateParsed = parseDate(dateIsoish, pattern, strictMode)
+
+  if !continentCitiy?
+    if !dateParsed.o? then throw new TypeError "either offset or continent city must be defined for timezone"
+    continent = "Etc"
+    sign= if dateParsed.o>0 then "+" else ""
+    city = "GMT" + sign + dateParsed.o.toString()
+  else
+    continentCities = continentCitiy.split((/[ \/]|[\s]+|[:]/))
+    continent = continentCities[0].trim()
+    city = if continentCities.length==2 then continentCities[1].trim() else continentCities[1].trim() + continentCities[2].trim()
 
   if ContinentsLoaded[continent] == undefined
     console.log("timestamp loded: "+continent)
     ContinentsLoaded[continent] = tz(new require("timezone/" + continent))
 
-  dateParsed = parseDate(dateIsoish, pattern, strictMode)
+
 
   monthRaw=dateParsed["M"]||dateParsed["MMM"]
   month = Timestamp.pad(monthRaw.toString(),2)
