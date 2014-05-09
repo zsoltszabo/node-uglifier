@@ -1,2 +1,3 @@
 coffee -m -wco lib_compiled src
 coffee -m -wco test_compiled src_test
+npm publish

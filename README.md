@@ -24,6 +24,8 @@ The only exception now from this rule is MMM which denotes the month when using 
 
 ##Tests
 
+`eq(ts.parse("Tue May 08 20:24:06 +0000 2014","w MMM DD HH:mm:ss +oooo YYYY","Etc/GMT-11"),ts.parse("Tue May 08 20:24:06 -0011 2014","w MMM DD HH:mm:ss +oooo YYYY"))`
+
 `eq(ts.parse("1/22/14 10:23:01.001 PM *", "M D Y HH:mm:ss.fff tt", "Europe/Kiev"),ts.parse("1/22/14 10:23:01.001 PM *", "M D Y HH:mm:ss.fff tt", "Europe/Berlin")-1000*60*60)`
 
 `eq(ts.parse("1/22/14 10:23:01.001 PM *", "M D Y HH:mm:ss.fff tt", "America/New_York")+3*1000*60*60,ts.parse("1/22/14 10:23:01.001 PM *", "M D Y HH:mm:ss.fff tt", "America/Los_Angeles"))`
@@ -31,6 +33,15 @@ The only exception now from this rule is MMM which denotes the month when using 
 `eq(ts.parse("1/22/14 10:23:01.001 PM *", "M D Y HH:mm:ss.fff tt", "Europe/Budapest")+9*1000*60*60,ts.parse("1/22/14 10:23:01.001 PM *", "M D Y HH:mm:ss.fff tt", "America/Los_Angeles"))`
 
 `eq(ts.parse("Feb 19, 2014 at 01:52", "MMM DD, YYYY at HH:mm", "Etc/Greenwich"),1392774720000)`
+
+#####result=ts.parseDate("2014-05-08 20:24:06.400","YYYY-MM-DD HH:mm:ss.fff",false)
+* eq(result.Y,2014)
+* eq(result.M,5)
+* eq(result.D,8)
+* eq(result.H,20)
+* eq(result.m,24)
+* eq(result.s,6)
+* eq(result.f,400)
 
 
 #####result = ts.parseDate("1994/01/02 11:03:04.6 PM", "YYYY MM DD HH:mm:ss.f tt") #T11:03:04.666 PM
