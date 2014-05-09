@@ -16,8 +16,8 @@
 
   test = function() {
     var result;
-    eq(ts.parse("Tue May 08 20:24:06 +0000 2014", "w MMM DD HH:mm:ss +oooo YYYY", "Etc/GMT-11"), ts.parse("Tue May 08 20:24:06 -0011 2014", "w MMM DD HH:mm:ss +oooo YYYY"));
-    ok(ts.parse("Tue May 08 20:24:06 -0011 2014", "w MMM DD HH:mm:ss +oooo YYYY") !== ts.parse("Tue May 08 20:24:06 +0000 2014", "w MMM DD HH:mm:ss +oooo YYYY", "Etc/GMT-10"));
+    eq(ts.parse("Tue May 08 20:24:06 +0000 2014", "w MMM DD HH:mm:ss oooo YYYY", "Etc/GMT-11"), ts.parse("Tue May 08 20:24:06 -0011 2014", "w MMM DD HH:mm:ss o YYYY"));
+    ok(ts.parse("Tue May 08 20:24:06 -0011 2014", "w MMM DD HH:mm:ss o YYYY") !== ts.parse("Tue May 08 20:24:06 +0000 2014", "w MMM DD HH:mm:ss o YYYY", "Etc/GMT-10"));
     result = ts.parseDate("2014-05-08 20:24:06.400", "YYYY-MM-DD HH:mm:ss.fff", false);
     eq(result.Y, 2014);
     eq(result.M, 5);

@@ -66,6 +66,7 @@
           break;
         case "+":
         case "-":
+        case "o":
           group = "offset";
           break;
         case "w":

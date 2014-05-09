@@ -1,7 +1,7 @@
 {
     "name": "timestamp-grabber",
     "description": "Convert a very wide variety of human readable date/time formats to unix timestamp in millis. Supports all major timezones thanks to timezonejs",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "homepage": "https://github.com/zsoltszabo/timestamp-grabber",
     "repository": {
         "type": "git",

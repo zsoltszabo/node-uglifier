@@ -51,7 +51,7 @@ getPatternPositions = (pattern)->
       when "s" then group = "time_optional"
       when "f" then group = "milli_optional"
       when "t" then group = "timeOfDay_optional"
-      when "+","-" then group = "offset"
+      when "+","-","o" then group = "offset"
       when "w" then group = "word"
     if group is undefined
       positions[i] = {"type": patternSplit[i], "len": patternSplit[i].length, "group": group}
