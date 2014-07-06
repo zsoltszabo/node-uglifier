@@ -1,7 +1,7 @@
 node-uglifier
 =========
 
-As I have just completed a huge pure Nodejs project in 80+ files. So I started to search for methods to have at least a minimal protection for my server side code.
+As I have just completed a huge pure Nodejs project in 80+ files. I started to search for methods to have at least a minimal protection for my server side code.
 I found no simple solution that could handle the **NodeJS** module system so I created **node-uglifier**. My almost 500Kb code in about 80 files got packed into a single file with around 150Kb size.
 
 how it works

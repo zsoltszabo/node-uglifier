@@ -1,7 +1,7 @@
 {
     "name": "node-uglifier",
     "description": "Merges and uglifies a whole NodeJs project into one file with external files option. Thieves lose the module name and structure information, code runs faster. Makes deployement super easy!",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "homepage": "https://github.com/zsoltszabo/node-uglifier",
     "repository": {
         "type": "git",
