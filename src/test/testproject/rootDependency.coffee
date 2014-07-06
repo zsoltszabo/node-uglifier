@@ -1,0 +1,1 @@
+module.exports.theNonTrivialFunction = (strIn) -> return "ROOT_TEST_" + strIn

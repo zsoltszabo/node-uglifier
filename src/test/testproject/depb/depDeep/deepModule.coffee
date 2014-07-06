@@ -1,0 +1,1 @@
+module.exports.boothDeepAndShalow = (strIn) -> return "DEEP_TEST" + strIn

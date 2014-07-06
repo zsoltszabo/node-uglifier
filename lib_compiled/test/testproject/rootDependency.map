@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "rootDependency.js",
+  "sourceRoot": "..\\..\\..",
+  "sources": [
+    "src\\test\\testproject\\rootDependency.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,EAAA,MAAM,CAAC,OAAO,CAAC,qBAAf,GAAuC,SAAC,KAAD,GAAA;AAAW,WAAO,YAAA,GAAe,KAAtB,CAAX;EAAA,CAAvC,CAAA;AAAA"
+}

@@ -1,9 +1,9 @@
 
 /**
- * Export timestampGrabber (with )
+ * Export NodeUglifier (with )
  */
 
-exports = module.exports = require('./lib_compiled/timestampGrabber.js');
+exports = module.exports = require('./lib_compiled/NodeUglifier.js');
 
 /*
  Export the version

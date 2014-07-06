@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "SomeClass2.js",
+  "sourceRoot": "..\\..\\..\\..",
+  "sources": [
+    "src\\test\\testproject\\depc\\SomeClass2.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA,UAAA;;AAAA,EAAM;AAEQ,IAAA,oBAAE,OAAF,GAAA;AAAW,MAAV,IAAC,CAAA,UAAA,OAAS,CAAX;IAAA,CAAZ;;AAAA,yBAEA,GAAA,GAAI,SAAA,GAAA;AACF,aAAO,IAAC,CAAA,OAAR,CADE;IAAA,CAFJ,CAAA;;sBAAA;;MAFF,CAAA;;AAAA,EAOA,MAAM,CAAC,OAAP,GAAe,UAPf,CAAA;AAAA"
+}

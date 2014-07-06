@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "constants.js",
+  "sourceRoot": "..\\..\\..\\..",
+  "sources": [
+    "src\\test\\testproject\\depa\\constants.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAGA;AAAA,MAAA,gBAAA;;AAAA,EAAA,OAAA,GAAQ,sBAAR,CAAA;;AAAA,EACA,OAAA,GAAQ,uBADR,CAAA;;AAAA,EAEA,MAAM,CAAC,OAAO,CAAC,MAAf,GAAsB,OAFtB,CAAA;;AAAA,EAGA,MAAM,CAAC,OAAO,CAAC,MAAf,GAAsB,OAHtB,CAAA;AAAA"
+}

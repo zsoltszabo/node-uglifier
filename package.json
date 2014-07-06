@@ -1,51 +1,50 @@
 {
-    "name": "timestamp-grabber",
-    "description": "Convert a very wide variety of human readable date/time formats to unix timestamp in millis. Supports all major timezones thanks to timezonejs",
-    "version": "0.0.4",
-    "homepage": "https://github.com/zsoltszabo/timestamp-grabber",
+    "name": "node-uglifier",
+    "description": "Merges and uglifies a whole NodeJs project into one file with external files option. Thieves lose the module name and structure information, code runs faster. Makes deployement super easy!",
+    "version": "0.1.3",
+    "homepage": "https://github.com/zsoltszabo/node-uglifier",
     "repository": {
         "type": "git",
-        "url": "git://github.com/zsoltszabo/timestamp-grabber.git"
+        "url": "git://github.com/zsoltszabo/node-uglifier.git"
     },
     "author": {
         "name": "Zsolt Istvan Szabo",
         "email": "zsoltszabo@web.de"
     },
-    "url": "https://github.com/zsoltszabo/timestamp-grabber",
+    "url": "https://github.com/zsoltszabo/node-uglifier",
     "keywords": [
-        "time",
-        "timezone",
-        "date",
-        "tzdata",
-        "utc",
-        "gmt",
-        "datetime",
-        "tz",
-        "format",
-        "events",
-        "calendar",
-        "strftime",
-        "parse",
-        "unix",
-        "timestamp"
+        "obfuscate",
+        "total",
+        "whole",
+        "project",
+        "protect",
+        "minify",
+        "code protect",
+        "uglify",
+        "mangle",
+        "compress"
     ],
     "contributors": [],
     "dependencies": {
+        "seedrandom":">=0.x",
         "sugar": ">=1.4.1",
         "underscore": ">=1.5.2",
-        "timezone": ">=0.x"
+        "uglify-js": ">=2.3",
+        "nodeunit": ">=0.x",
+        "execSync":">=0.x",
+        "fs-extra":">=0.x",
+        "optparse":">=0.x"
     },
-    "devDependencies": {
-        "uglify-js": "~1.3",
-        "nodeunit": ">=0.x"
+    "devDependencies":{
+        "nodeunit":">=0.x"
     },
     "engines": {
         "node": "> 0.6.0"
     },
     "main": "./index.js",
     "scripts": {
-        "test": "node test_compiled/timestampGrabber_test.js"
+        "test": "node nodeunit.js ./lib_compiled/test/unitTest.js"
     },
-    "readmeFilename": "README.md",
-    "_id": "timestamp@0.0.1"
+    "readmeFilename": "README.md"
+
 }
