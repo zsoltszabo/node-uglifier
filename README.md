@@ -1,77 +1,45 @@
-timestamp-grabber
+node-uglifier
 =========
 
-Have you been searching the **NodeJS** scene everywhere for a simple date parser tool that can handle timezones too? Search no more, I present you the **timestamp-grabber**.
-There are tons of modules to do whatever you want with timestamps, but to get to the timestamp timezone aware has been lacking.
-Convert a very wide variety of human readable date/time formats to unix timestamp in millis. Supports all major timezones thanks to the **Timezone** module.
-
-
-The code is very fogiving in terms of pattern definition. The code is easily extendable for even more cases.
-
+As I have just completed a huge pure Nodejs project in 80+ files. So I started to search for methods to have at least a minimal protection for my server side code.
+I found no simple solution that could handle the **NodeJS** module system so I created **node-uglifier**. My almost 500Kb code in about 80 files got packed into a single file with around 150Kb size.
 
 how it works
 --------
 
-Here is how it works. There are 2 public methods as you can see in the following tests. You will most likely use parse, that gives you the unix timestamp in millis.
+It visits all "required" files recursively. It merges all your files into a single one (core and npm modules aside). Than you can apply uglify to that single merged file.
+A combined file has the benefit of removing module name and module structure information as well. Making reverse engineering a bit harder.
 
-* ts = require("timestamp-grabber")
-* console.log(ts.parse("1/22/14 10:23:01.001 PM *", "M D Y HH:mm:ss.fff tt", "America/New_York"))
-* ->1390447381001
+You can find examples in the lib_compiled/test/unitTest.js. Here is a taste of how it works.
 
-Note that the number of token letters is optional, you can write YYYY, YY, Y, it will recognize the 2 digit or 4 digit year anyways.
-Currently there is no "strict mode" that throws error if digit counts do not match.
-The only exception now from this rule is MMM which denotes the month when using 3 letter english month names instead of digits.
+##Commands
 
-##Tests
+* npm install "node-uglifier"
+* NodeUglifier = require("node-uglifier");
+* nodeUglifier = new NodeUglifier("lib_compiled/test/testproject/main.js");
+* mergedSource = nodeUglifier.merge().uglify().toString();
+### export
+* nodeUglifier.exportToFile("lib_compiled/test/resultFiles/simpleMergeWithFilterAndUglify.js")
+* nodeUglifier.exportSourceMaps("lib_compiled/test/resultFiles/sourcemaps/simpleMergeWithFilterAndUglify.js");
 
-`eq(ts.parse("Tue May 08 20:24:06 +0000 2014","w MMM DD HH:mm:ss +oooo YYYY","Etc/GMT-11"),ts.parse("Tue May 08 20:24:06 -0011 2014","w MMM DD HH:mm:ss +oooo YYYY"))`
-
-`eq(ts.parse("1/22/14 10:23:01.001 PM *", "M D Y HH:mm:ss.fff tt", "Europe/Kiev"),ts.parse("1/22/14 10:23:01.001 PM *", "M D Y HH:mm:ss.fff tt", "Europe/Berlin")-1000*60*60)`
-
-`eq(ts.parse("1/22/14 10:23:01.001 PM *", "M D Y HH:mm:ss.fff tt", "America/New_York")+3*1000*60*60,ts.parse("1/22/14 10:23:01.001 PM *", "M D Y HH:mm:ss.fff tt", "America/Los_Angeles"))`
-
-`eq(ts.parse("1/22/14 10:23:01.001 PM *", "M D Y HH:mm:ss.fff tt", "Europe/Budapest")+9*1000*60*60,ts.parse("1/22/14 10:23:01.001 PM *", "M D Y HH:mm:ss.fff tt", "America/Los_Angeles"))`
-
-`eq(ts.parse("Feb 19, 2014 at 01:52", "MMM DD, YYYY at HH:mm", "Etc/Greenwich"),1392774720000)`
-
-#####result=ts.parseDate("2014-05-08 20:24:06.400","YYYY-MM-DD HH:mm:ss.fff",false)
-* eq(result.Y,2014)
-* eq(result.M,5)
-* eq(result.D,8)
-* eq(result.H,20)
-* eq(result.m,24)
-* eq(result.s,6)
-* eq(result.f,400)
+### one liner
+*  (new NodeUglifier("lib_compiled/test/testproject/main.js")).uglify().exportToFile("lib_compiled/test/resultFiles/simpleMergeWithFilterAndUglify.js");
 
 
-#####result = ts.parseDate("1994/01/02 11:03:04.6 PM", "YYYY MM DD HH:mm:ss.f tt") #T11:03:04.666 PM
-* eq(result.Y,1994)
-* eq(result.M,1)
-* eq(result.D,2)
-* eq(result.H,23)
-* eq(result.m,3)
-* eq(result.s,4)
-* eq(result.f,600)
+Extra
+--------
+You can keep files external if you pass an option to the NodeUglifier class.
 
+* nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{mergeFileFilter:["./lib_static/test/","./depa/constants.js"]})
 
-#####result=ts.parseDate("1994-1-2T11:3:4.600") #T11:03:04.666 PM
-* eq(result.Y,1994)
-* eq(result.t,undefined)
+They will be copied to the ./lib_external folder and references to them will be modified in the merged file.
 
-#####result=ts.parseDate("1994-1-2 11:03 AM") #T11:03:04.666 PM
-* eq(result.Y,1994)
-* eq(result.H,11)
-* eq(result.s,undefined)
-* eq(result.f,undefined)
+It handles as well: new(require(module))(constructorParams)
 
-#####result =ts.parseDate("1/15/14 10:23 PM *", "M D Y H:m tt") #T11:03:04.666 PM
+Notes
+--------
+Obviously you need to avoid cycles in your merged dependencies.
 
-* eq(result.Y,2014)
-* eq(result.M,1)
-* eq(result.D,15)
-* eq(result.H,22)
-* eq(result.m,23)
-
-## License
-
-* license.txt
+I like programing in high level interpreted languages but I hate filthy thieves, blackhat hackers. They can steal the fruit of your hard work in just a fraction of the time of that it took you to create it.
+If you have any idea, contribution how to protect a full NodeJS app even better, obfuscate it better just contact me. I would like to make this project
+a one stop shop for NodeJs project protection.
