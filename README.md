@@ -10,7 +10,7 @@ how it works
 It visits all "required" files recursively. It merges all your files into a single one (core and npm modules aside). Than you can apply uglify to that single merged file.
 A combined file has the benefit of removing module name and module structure information as well. Making reverse engineering a bit harder.
 
-You can find examples in the lib_compiled/test/unitTest.js. Here is a taste of how it works.
+You can find examples in the lib_compiled/test/unitTest.js. Here is a taste of how it works from the unit tests.
 
 ##Commands
 
@@ -19,11 +19,11 @@ You can find examples in the lib_compiled/test/unitTest.js. Here is a taste of h
 * nodeUglifier = new NodeUglifier("lib_compiled/test/testproject/main.js");
 * mergedSource = nodeUglifier.merge().uglify().toString();
 ### export
-* nodeUglifier.exportToFile("lib_compiled/test/resultFiles/simpleMergeWithFilterAndUglify.js")
-* nodeUglifier.exportSourceMaps("lib_compiled/test/resultFiles/sourcemaps/simpleMergeWithFilterAndUglify.js");
+* nodeUglifier.exportToFile("lib_compiled/test/resultFiles/simpleMergeAndUglify.js")
+* nodeUglifier.exportSourceMaps("lib_compiled/test/resultFiles/sourcemaps/simpleMergeAndUglify.js");
 
 ### one liner
-*  (new NodeUglifier("lib_compiled/test/testproject/main.js")).uglify().exportToFile("lib_compiled/test/resultFiles/simpleMergeWithFilterAndUglify.js");
+*  (new NodeUglifier("lib_compiled/test/testproject/main.js")).uglify().exportToFile("lib_compiled/test/resultFiles/simpleMergeAndUglify.js");
 
 
 Extra
@@ -31,6 +31,7 @@ Extra
 You can keep files external if you pass an option to the NodeUglifier class.
 
 * nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{mergeFileFilter:["./lib_static/test/","./depa/constants.js"]})
+* nodeUglifier.exportToFile("lib_compiled/test/resultFiles/simpleMergeWithFilterAndUglify.js");
 
 They will be copied to the ./lib_external folder and references to them will be modified in the merged file.
 
@@ -41,5 +42,9 @@ Notes
 Obviously you need to avoid cycles in your merged dependencies.
 
 I like programing in high level interpreted languages but I hate filthy thieves, blackhat hackers. They can steal the fruit of your hard work in just a fraction of the time of that it took you to create it.
-If you have any idea, contribution how to protect a full NodeJS app even better, obfuscate it better just contact me. I would like to make this project
+If you have any idea, contribution how to protect a full NodeJS app even better, obfuscate it better just contact me, commit to Github for creds:). I would like to make this project
 a one stop shop for NodeJs project protection.
+
+Change log
+--------
+0.1.5: Added strings to hex converting to uglify options - nodeUglifier.uglify({strProtectionLvl:1})

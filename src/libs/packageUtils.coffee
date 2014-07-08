@@ -11,6 +11,7 @@ fsExtra = require('fs-extra');
 fs = require('fs');
 UglifyJS=require('uglify-js')
 path = require('path')
+_ = require('underscore')
 
 packageUtils=module.exports
 
@@ -101,7 +102,7 @@ packageUtils.getRequireStatements=(ast,file,possibleExtensions=["js","coffee"],i
   ast.walk(new UglifyJS.TreeWalker(
     (node)->
       if (node instanceof UglifyJS.AST_Call) && (node.start.value == 'require' || (node.start.value == 'new' and node.expression.print_to_string()=="require"))
-        text=node.print_to_string({ beautify: true })
+        text=node.print_to_string({ beautify: false })
 #        console.log(text)
         args=node.args
         try
@@ -123,6 +124,56 @@ packageUtils.getRequireStatements=(ast,file,possibleExtensions=["js","coffee"],i
   )
   return r
 
+
+strEscapeMap = {
+  '\b': '\\b',
+  '\f': '\\f',
+  '\n': '\\n',
+  '\r': '\\r',
+  '\t': '\\t',
+};
+
+packageUtils.hexifyString=(str)->
+  r=""
+  if !str.length>0 then return r
+  for i in [0..str.length-1]
+    char = str[i];
+    if (strEscapeMap[char])
+      r += r[char];
+    else if ('\\' == char)
+      r += '\\' + str[++i]
+    else
+      r += '\\x' + str.charCodeAt(i).toString(16);
+  return r;
+
+packageUtils.deHexifyString=(str)->
+  return str.toString()
+
+
+packageUtils.getSourceHexified=(ast)->
+  hexify=(node)->
+    if (node instanceof UglifyJS.AST_String)
+      text=node.getValue()
+      hex = packageUtils.hexifyString(text);
+      obj = _.extend({}, node);
+      obj.value=hex
+      return new UglifyJS.AST_String(obj);
+    else
+      return
+
+  transformer = new UglifyJS.TreeTransformer(null, hexify);
+  stream = new UglifyJS.OutputStream;
+  stream.print_string = (str)->
+    return this.print('"' + str + '"')
+
+  ast=ast.transform(transformer);
+  ast.print(stream);
+
+  return stream.toString()
+
+
+
+
 packageUtils.replaceRequireStatement=(textIn,orig,replacement)->
   text=textIn
   isReplaced=false
@@ -137,6 +188,24 @@ packageUtils.replaceRequireStatement=(textIn,orig,replacement)->
   if !isReplaced
     throw new Error(orig + " was not replaced with " + replacement)
   return text
+
+
+packageUtils.countWords=(sentence)->
+
+  index = {}
+  words = sentence
+  .replace(/[.,?!;()"'-]/g, " ")
+  .replace(/\s+/g, " ")
+  .toLowerCase()
+  .split(" ");
+
+  words.forEach((word)->
+    if (!(index.hasOwnProperty(word)))
+      index[word] = 0;
+    index[word]++;
+  )
+  return index
+
 
 
 #        console.log([text,path.resolve(fileDir,pathOfModule),packageUtils.isNative(pathOfModule)].join(" | "))

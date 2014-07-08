@@ -2,6 +2,17 @@ fs = require('fs');
 NodeUglifier=require("../NodeUglifier")
 packageUtils=require('../libs/packageUtils')
 path = require('path')
+#_=require("\x6e\x64\x65\x72\x73\x63\x6f\x72\x65\x6e")
+
+IS_RE_CREATE_TEST_FILES=false
+
+exports.testStuff=(test)->
+  t0="./test/test2"
+  t0_2="onderscore"
+  t1=packageUtils.hexifyString(t0_2)
+  console.log(t1)
+  console.log("\n")
+  test.done()
 
 exports.testPackageUtils=(test)->
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",[]),[])
@@ -37,7 +48,7 @@ exports.testMerge=(test)->
   catch me
     test.fail(me.toString(),"expected no error thrown from combined project")
 
-#  nodeUglifier.exportToFile(testFile)
+  if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
   test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
 
   test.done()
@@ -50,7 +61,7 @@ exports.testMergeWithFilter=(test)->
   nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{rngSeed:"hello",mergeFileFilter:["./lib_static/test/","./depa/constants.js"]})
   mergedSource=nodeUglifier.merge().toString()
 
-#  nodeUglifier.exportToFile(testFile)
+  if IS_RE_CREATE_TEST_FILES then   nodeUglifier.exportToFile(testFile)
 
   test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
 
@@ -64,8 +75,29 @@ exports.testMergeWithFilterAndUglify=(test)->
   nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{rngSeed:"hello",mergeFileFilter:["./lib_static/test/","./depa/constants.js"]})
   mergedSource=nodeUglifier.merge().uglify().toString()
 
-#  nodeUglifier.exportToFile(testFile)
+  if IS_RE_CREATE_TEST_FILES then   nodeUglifier.exportToFile(testFile)
   nodeUglifier.exportSourceMaps(uglifySourceMap)
+
+  test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+
+  test.done()
+
+
+exports.testMergeWithFilterAndUglifyAndStrProtection=(test)->
+
+  testFile="lib_compiled/test/resultFiles/simpleMergeWithFilterAndUglifyAndStrProtection.js"
+  uglifySourceMap="lib_compiled/test/resultFiles/sourcemaps/simpleMergeWithFilterAndUglifyAndStrProtection.js"
+
+  nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{rngSeed:"hello",mergeFileFilter:["./lib_static/test/","./depa/constants.js"]})
+  mergedSource=nodeUglifier.merge().uglify({strProtectionLvl:1}).toString()
+
+  if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
+  nodeUglifier.exportSourceMaps(uglifySourceMap)
+
+#  try
+#    eval(mergedSource)
+#  catch me
+#    test.fail(me.toString(),"expected no error thrown from combined project")
 
   test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
 

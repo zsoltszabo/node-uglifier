@@ -190,7 +190,7 @@ class NodeUglifier
   uglify:(optionsIn={})->
     if !@lastResult then @merge()
 
-    options={mangle:true,compress:{drop_console:false},output:{comments:false}} #, reserved:"cachedModules"
+    options={mangle:true,compress:{drop_console:false,hoist_funs:true,loops:true,evaluate: true,conditionals:true},output:{comments:false},strProtectionLvl:0} #, reserved:"cachedModules"
     _.extend(options,optionsIn)
     if !@lastResult.source then return
     source=@toString()
@@ -198,6 +198,13 @@ class NodeUglifier
     res=UglifyJS.minify(source, _.extend({fromString: true,outSourceMap:UGLIFY_SOURCE_MAP_TOKEN},options));
     @lastResult.source=res.code
     @lastResult.sourceMapUglify=res.map
+
+    switch options.strProtectionLvl
+      when 1
+        ast=packageUtils.getAst(@lastResult.source)
+        @lastResult.source=packageUtils.getSourceHexified(ast)
+
+
     return this
 
 

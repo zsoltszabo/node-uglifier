@@ -16,6 +16,8 @@ shasum = crypto.createHash('sha1')
 r=shasum.update(message).digest("hex")
 console.log(rootDependency.theNonTrivialFunction(r))
 
+emptyString=""
+
 if !_.isEqual(rootDependency.theNonTrivialFunction(r),"ROOT_TEST_6af9b2faa8ae8e408decd4f7121888af71597a90")
   throw new Error("ups did not work we got: " + rootDependency.theNonTrivialFunction(r) + "  instead")
 
@@ -25,7 +27,7 @@ if !_.isEqual(deepModule.boothDeepAndShalow(r),deepModule.boothDeepAndShalow("6a
 if !_.isEqual(SomeClass.get(),"test1")
   throw new Error("ups did not work we got: " + SomeClass.get() + "  instead test1 ")
 
-if !_.isEqual((new SomeClass2("test2").get()),"test2")
+if !_.isEqual((new SomeClass2("test2").get()) + emptyString,"test2")
   throw new Error("ups did not work we got: " + (new SomeClass2("test2").get() + "  instead test2 "))
 
 
