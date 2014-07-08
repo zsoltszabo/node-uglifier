@@ -30,7 +30,7 @@ UGLIFY_SOURCE_MAP_TOKEN="UGLIFY_SOURCE_MAP_TOKEN"
 class NodeUglifier
   constructor:(mainFile,options={})->
     #defaults
-    @options={mergeFileFilter:[],newFilteredFileDir:"./lib_external",containerName:"cachedModules",rngSeed:null,licenseFile:null}
+    @options={mergeFileFilter:[],newFilteredFileDir:"./lib_external",containerName:"cachedModules",rngSeed:null,licenseFile:null,fileExtensions:["js","coffee","json"],suppressFilteredDependentError:false}
     _.extend(@options,options)
 
     @mainFileAbs=path.resolve(process.cwd(),mainFile)
@@ -49,6 +49,7 @@ class NodeUglifier
     @_sourceCodes={} #hashes have source,sourceMod,sourceModWrapped
 
     @statistics={}
+
 
     @lastResult=null
 
@@ -100,7 +101,7 @@ class NodeUglifier
       isSourceObjFiltered=(filteredOutFiles.filter((fFile)->return path.normalize(fFile)==path.normalize(filePath)).length>0)
 
       ast=packageUtils.getAst(source)
-      requireStatements=packageUtils.getRequireStatements(ast,filePath)
+      requireStatements=packageUtils.getRequireStatements(ast,filePath,_this.fileExtensions)
       #add salted hashes of files
       requireStatements.each((o,i)->requireStatements[i]= _.extend(o,{pathSaltedHash:cryptoUtils.getSaltedHash(o.path,_this.hashAlgorithm,_this.salt)}))
 
@@ -108,9 +109,10 @@ class NodeUglifier
       for requireStatement in requireStatements
         sourceObjDep=_this._sourceCodes[requireStatement.pathSaltedHash]
 
-        if isSourceObjFiltered and packageUtils.getIfNonNativeNotFilteredNonNpm(requireStatement.path)
+        if isSourceObjFiltered and packageUtils.getIfNonNativeNotFilteredNonNpm(requireStatement.path,filteredOutFiles,_this.options.fileExtensions)
           #filtered out files are not allowed to have dependency on merged fiels
-          throw new Error ("filtered files can not have dependency on merged files, file: " + filePath + " dependency: " + requireStatement.path)
+          msg="filtered files can not have dependency on merged files, file: " + filePath + " dependency: " + requireStatement.path
+          if _this.options.suppressFilteredDependentError then console.warn(msg) else throw new Error (msg)
 
         if !sourceObjDep?
           recursiveSourceGrabber(requireStatement.path)
