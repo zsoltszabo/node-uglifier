@@ -1,0 +1,86 @@
+{
+  "name": "js-graph",
+  "version": "0.1.0-r3",
+  "title": "Javascript Graph Datastructure",
+  "homepage": "http://mhelvens.net",
+  "description": "a javascript library for storing arbitrary data in mathematical (di)graphs, as well as traversing and analyzing them in various ways",
+  "main": "dist/js-graph.js",
+  "author": {
+    "name": "Michiel Helvensteijn",
+    "email": "mhelvens@gmail.com",
+    "url": "http://mhelvens.net"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mhelvens/js-graph.git"
+  },
+  "keywords": [
+    "datastructure",
+    "graph",
+    "directed graph",
+    "traversal",
+    "dependencies"
+  ],
+  "bugs": {
+    "url": "https://github.com/mhelvens/js-graph/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/mhelvens/js-graph/blob/master/LICENSE"
+    }
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "bower": "~1.1.2",
+    "grunt": "~0.4.1",
+    "grunt-contrib-compress": "^0.8.0",
+    "grunt-contrib-copy": "^0.5.0",
+    "grunt-contrib-uglify": "~0.4.0",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-coveralls": "^0.3.0",
+    "grunt-karma": "~0.8.2",
+    "karma": "^0.12.9",
+    "karma-chrome-launcher": "^0.1.3",
+    "karma-coverage": "~0.2.1",
+    "karma-jasmine": "~0.1.5",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-requirejs": "^0.2.1",
+    "matchdep": "~0.1.2",
+    "phantomjs": "^1.9.7-3",
+    "requirejs": "^2.1.11"
+  },
+  "engines": {
+    "node": ">=0.10.17",
+    "npm": ">=1.3.8"
+  },
+  "contributors": [
+    {
+      "name": "Authors ordered by first contribution."
+    },
+    {
+      "name": "Michiel Helvensteijn",
+      "email": "mhelvens@gmail.com"
+    }
+  ],
+  "_id": "js-graph@0.1.0-r3",
+  "dist": {
+    "shasum": "b80f76fc21ec642b8d39cebb83545afb1d6de3c5",
+    "tarball": "http://registry.npmjs.org/js-graph/-/js-graph-0.1.0-r3.tgz"
+  },
+  "_from": "js-graph@>=0.x",
+  "_npmVersion": "1.4.6",
+  "_npmUser": {
+    "name": "mhelvens",
+    "email": "mhelvens@gmail.com"
+  },
+  "maintainers": [
+    {
+      "name": "mhelvens",
+      "email": "mhelvens@gmail.com"
+    }
+  ],
+  "directories": {},
+  "_shasum": "b80f76fc21ec642b8d39cebb83545afb1d6de3c5",
+  "_resolved": "https://registry.npmjs.org/js-graph/-/js-graph-0.1.0-r3.tgz"
+}

@@ -7,7 +7,8 @@
 # */
 #
 
-
+Errors=require("./libs/Errors")
+Graph=require("./libs/js-graph-mod/src/js-graph")
 fsExtra = require('fs-extra');
 fs = require('fs');
 _ = require('underscore')
@@ -17,6 +18,7 @@ sh = require('execSync')
 packageUtils=require('./libs/packageUtils')
 cryptoUtils=require('./libs/cryptoUtils')
 UglifyJS=require('uglify-js')
+util=require("util")
 
 saltLength=20
 UGLIFY_SOURCE_MAP_TOKEN="UGLIFY_SOURCE_MAP_TOKEN"
@@ -83,12 +85,21 @@ class NodeUglifier
 
     firstLine="var " + @wrappedSourceContainerName + "=[];"
     #filteredOutFilesObj:{} has files by basename contains {source,sourceMod,pathRel,serial} #where pathRel is their saved location after exporting relative to the exported main file
-    r={source:firstLine,filteredOutFilesObj:{},sourceMapModules:{}}
+    r={source:firstLine,filteredOutFilesObj:{},sourceMapModules:{},pathOrder:[],cycles:[]}
+#    graph.addNewVertex('k1', 'oldValue1');
+#    graph.addNewEdge('k5', 'k3');
+    depGraph=new Graph();
+
 
     filteredOutFiles=packageUtils.getMatchingFiles(@mainFileAbs,@options.mergeFileFilter)
 
 
     recursiveSourceGrabber=(filePath)->
+
+      try
+        depGraph.addNewVertex(filepath, filepath);
+      catch me
+        #do nothing path vertex exists
 
       source=packageUtils.readFile(filePath).toString()
       #add source and wrapped source
@@ -107,6 +118,18 @@ class NodeUglifier
 
 
       for requireStatement in requireStatements
+
+
+        try
+          depGraph.addNewVertex(requireStatement.path, null);
+        catch me
+          #do nothing path vertex exists
+        try
+          depGraph.addNewEdge(filePath, requireStatement.path);
+        catch me
+          #do nothing path edge exists
+
+
         sourceObjDep=_this._sourceCodes[requireStatement.pathSaltedHash]
 
         if isSourceObjFiltered and packageUtils.getIfNonNativeNotFilteredNonNpm(requireStatement.path,filteredOutFiles,_this.options.fileExtensions)
@@ -150,12 +173,31 @@ class NodeUglifier
           sourceObj.sourceModWrapped=_this.addWrapper(sourceObj.sourceMod,sourceObj.serial)
         else
           sourceObj.sourceModWrapped=sourceObj.sourceMod
+        r.pathOrder.push(filePath)
         r.source=r.source + sourceObj.sourceModWrapped
 
 
 
     recursiveSourceGrabber(@mainFileAbs)
     @lastResult=r
+
+    #check for cyclic dependencies and throw error listing them
+    wasCycle=true
+    iter=0
+    while wasCycle and iter<1000
+      iter++
+      wasCycle=false
+      try
+        depGraph.topologically((vertex,vertexVal)->)
+      catch me
+        wasCycle=true
+
+        if me.cycle
+          r.cycles.push(me.cycle)
+          edgeToRemove=[me.cycle.last(2).last(),me.cycle.last(2).first()].reverse()
+          depGraph.removeEdge.apply(depGraph,edgeToRemove)
+
+    if !_.isEmpty(r.cycles) then throw new Errors.CyclicDependencies(r.cycles)
     return this
 
   toString:()->

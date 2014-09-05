@@ -47,6 +47,8 @@ a one stop shop for NodeJs project protection.
 
 Change log
 --------
+0.1.8: Throws error for cyclic dependencies, listing all of them.
+
 0.1.6: Bug fix for filtered out dependency check on merged files.
        Added suppressFilteredDependentError:true option. (handy if you want to remove part of project from production, you only have to then delete these files auto from lib_external with your build script)
        ->new NodeUglifier("lib_compiled/test/testproject/main.js",{suppressFilteredDependentError:true})
