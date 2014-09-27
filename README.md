@@ -2,7 +2,7 @@ node-uglifier
 =========
 
 As I have just completed a huge pure Nodejs project in 80+ files. I started to search for methods to have at least a minimal protection for my server side code.
-I found no simple solution that could handle the **NodeJS** module system so I created **node-uglifier**. My almost 500Kb code in about 80 files got packed into a single file with around 150Kb size.
+I found no simple solution that could handle the **NodeJS** module system automatically so I created **node-uglifier**. My almost 500Kb code in about 80 files got packed into a single file with around 150Kb size.
 
 how it works
 --------
@@ -17,7 +17,7 @@ You can find examples in the lib_compiled/test/unitTest.js. Here is a taste of h
 * npm install "node-uglifier"
 * NodeUglifier = require("node-uglifier");
 * nodeUglifier = new NodeUglifier("lib_compiled/test/testproject/main.js");
-* mergedSource = nodeUglifier.merge().uglify().toString();
+* /mergedSourceString = nodeUglifier.merge().uglify().toString();/ - in case you need it
 ### export
 * nodeUglifier.exportToFile("lib_compiled/test/resultFiles/simpleMergeAndUglify.js")
 * nodeUglifier.exportSourceMaps("lib_compiled/test/resultFiles/sourcemaps/simpleMergeAndUglify.js");
@@ -50,7 +50,7 @@ a one stop shop for NodeJs project protection.
 
 Change log
 --------
-0.1.9: I got inquiry on Github about why meanstack cannot be merged. That project is now included in the testprojects and a new unit test created for it: testOnMeanStack.coffee
+0.2.0: I got inquiry on Github about why meanstack cannot be merged. That project is now included in the testprojects and a new unit test created for it: testOnMeanStack.coffee
        In that test file I write down the issues I had and how I resolved those. In short it had fancy require statements and same filenames as module names.
        Also now there is a "Warning!:" console log for unprocessed require statements. (they will be 95% of the time dynamic ones)
 

@@ -1,7 +1,7 @@
 {
     "name": "node-uglifier",
-    "description": "Merges and uglifies a whole NodeJs project into one file with external files option. Thieves lose the module name and structure information, code runs faster. Makes deployement super easy!",
-    "version": "0.1.9",
+    "description": "Fully auto merging and uglifying a whole NodeJs project into one file with external files option. Thieves lose the module name and structure information, code runs faster. Makes deployement super easy!",
+    "version": "0.2.0",
     "homepage": "https://github.com/zsoltszabo/node-uglifier",
     "repository": {
         "type": "git",
@@ -9,7 +9,7 @@
     },
     "author": {
         "name": "Zsolt Istvan Szabo",
-        "email": "zsoltszabo@web.de"
+        "email": "zsoltszabo317@gmail.com"
     },
     "url": "https://github.com/zsoltszabo/node-uglifier",
     "keywords": [
@@ -22,7 +22,8 @@
         "code protect",
         "uglify",
         "mangle",
-        "compress"
+        "compress",
+        "automatic"
     ],
     "contributors": [],
     "dependencies": {
