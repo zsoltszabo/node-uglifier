@@ -17,10 +17,17 @@ You can find examples in the lib_compiled/test/unitTest.js. Here is a taste of h
 * npm install "node-uglifier"
 * NodeUglifier = require("node-uglifier");
 * nodeUglifier = new NodeUglifier("lib_compiled/test/testproject/main.js");
-* /mergedSourceString = nodeUglifier.merge().uglify().toString();/ - in case you need it
+* nodeUglifier.merge().uglify()
+
 ### export
 * nodeUglifier.exportToFile("lib_compiled/test/resultFiles/simpleMergeAndUglify.js")
 * nodeUglifier.exportSourceMaps("lib_compiled/test/resultFiles/sourcemaps/simpleMergeAndUglify.js");
+
+### in case you need it
+* uglifiedString=nodeUglifier.toString()
+* if you call the above before uglify() but after merge() you get the not yet uglified merged source
+
+
 
 ### one liner
 *  (new NodeUglifier("lib_compiled/test/testproject/main.js")).uglify().exportToFile("lib_compiled/test/resultFiles/simpleMergeAndUglify.js");
@@ -50,6 +57,7 @@ a one stop shop for NodeJs project protection.
 
 Change log
 --------
+0.2.1  Readme errors
 0.2.0: I got inquiry on Github about why meanstack cannot be merged. That project is now included in the testprojects and a new unit test created for it: testOnMeanStack.coffee
        In that test file I write down the issues I had and how I resolved those. In short it had fancy require statements and same filenames as module names.
        Also now there is a "Warning!:" console log for unprocessed require statements. (they will be 95% of the time dynamic ones)
