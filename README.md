@@ -35,11 +35,14 @@ You can keep files external if you pass an option to the NodeUglifier class.
 
 They will be copied to the ./lib_external folder and references to them will be modified in the merged file.
 
-It handles as well: new(require(module))(constructorParams)
+It handles as well:
+ new(require(module))(constructorParams)
+ require(module)()
+ require(module)(something)
 
 Notes
 --------
-Obviously you need to avoid cycles in your merged dependencies.
+Obviously you need to avoid cycles in your merged dependencies. Though they are all detected and written out to console, so no worries.
 
 I like programing in high level interpreted languages but I hate filthy thieves, blackhat hackers. They can steal the fruit of your hard work in just a fraction of the time of that it took you to create it.
 If you have any idea, contribution how to protect a full NodeJS app even better, obfuscate it better just contact me, commit to Github for creds:). I would like to make this project
@@ -47,6 +50,10 @@ a one stop shop for NodeJs project protection.
 
 Change log
 --------
+0.1.9: I got inquiry on Github about why meanstack cannot be merged. That project is now included in the testprojects and a new unit test created for it: testOnMeanStack.coffee
+       In that test file I write down the issues I had and how I resolved those. In short it had fancy require statements and same filenames as module names.
+       Also now there is a "Warning!:" console log for unprocessed require statements. (they will be 95% of the time dynamic ones)
+
 0.1.8: Throws error for cyclic dependencies, listing all of them.
 
 0.1.6: Bug fix for filtered out dependency check on merged files.

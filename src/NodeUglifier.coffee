@@ -108,6 +108,9 @@ class NodeUglifier
         _this._sourceCodes[pathSaltedHash]={source,serial:_.keys(_this._sourceCodes).length,sourceMod:source} #wrappedModifiedSource:packageUtils.substituteRequireWrapperFnc(source,pathSaltedHash)
         console.log(filePath + " added to sources ")
 
+#      if !_.isEmpty(filePath.match("express.js"))
+#        a=1+1
+
       sourceObj=_this._sourceCodes[pathSaltedHash]
       isSourceObjFiltered=(filteredOutFiles.filter((fFile)->return path.normalize(fFile)==path.normalize(filePath)).length>0)
 

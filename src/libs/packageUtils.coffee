@@ -74,41 +74,55 @@ packageUtils.getIfNonNativeNotFilteredNonNpm=(fileAbs,filters,possibleExtensions
 #returns the file path of modules if file exists
 #if no extension specified first existing possibleExtensions is used
 packageUtils.getRequireStatements=(ast,file,possibleExtensions=["js","coffee"],isOnlyNonNativeNonNpm=true)->
+  r=[]
+
   handleRequireNode=(text,args)->
     if args.length!=1 then throw new Error ("in file: " + file + " require supposed to have 1 argument: " + text)
     pathOfModuleRaw=args[0].value
 
-    pathOfModuleLoc=path.resolve(fileDir,pathOfModuleRaw)
-    pathOfModuleLocStats=try fs.lstatSync(pathOfModuleLoc) catch me;
+    if !pathOfModuleRaw? then   throw new Error("probably dynamic")
 
-    if (pathOfModuleLocStats and pathOfModuleLocStats.isDirectory()) then throw new Error("in file: " + file + " require for a directory not supported " + text)
+    hasPathInIt=(!_.isEmpty(pathOfModuleRaw.match("/"))||!_.isEmpty(pathOfModuleRaw.match(/\\/)))
 
-    #if path can be resolved and it is file than it is non native, non npm
-    pathOfModule=packageUtils.getIfNonNativeNotFilteredNonNpm(pathOfModuleLoc,[],possibleExtensions)
-    #        if path.extname(pathOfModuleLoc)==""
-    #          existingExtensions=possibleExtensions.filter((ext)->return fs.existsSync(pathOfModuleLoc + "." + ext))
-    #          if existingExtensions.length>1 then throw new Error("in file: " + file + " multiple matching extensions problem for " + text)
-    #          pathOfModule=if existingExtensions.length==1 then pathOfModuleLoc + "." + existingExtensions[0] else null
-    #        else
-    #          pathOfModule=if fs.existsSync(pathOfModuleLoc) then pathOfModuleLoc else null
+    if hasPathInIt
+      #it is not a module
+      pathOfModuleLoc=path.resolve(fileDir,pathOfModuleRaw)
+      pathOfModuleLocStats=try fs.lstatSync(pathOfModuleLoc) catch me;
 
-    rs={text,path:pathOfModule}
-    if !isOnlyNonNativeNonNpm || pathOfModule
-      r.push(rs)
+      if (pathOfModuleLocStats and pathOfModuleLocStats.isDirectory()) then throw new Error("in file: " + file + " require for a directory not supported " + text)
+
+      #if path can be resolved and it is file than it is non native, non npm
+      pathOfModule=packageUtils.getIfNonNativeNotFilteredNonNpm(pathOfModuleLoc,[],possibleExtensions)
+      #        if path.extname(pathOfModuleLoc)==""
+      #          existingExtensions=possibleExtensions.filter((ext)->return fs.existsSync(pathOfModuleLoc + "." + ext))
+      #          if existingExtensions.length>1 then throw new Error("in file: " + file + " multiple matching extensions problem for " + text)
+      #          pathOfModule=if existingExtensions.length==1 then pathOfModuleLoc + "." + existingExtensions[0] else null
+      #        else
+      #          pathOfModule=if fs.existsSync(pathOfModuleLoc) then pathOfModuleLoc else null
+
+      rs={text,path:pathOfModule}
+      if !isOnlyNonNativeNonNpm || pathOfModule
+        r.push(rs)
 
 
-  r=[]
+
+
+
   fileDir=path.dirname(file)
   ast.walk(new UglifyJS.TreeWalker(
     (node)->
       if (node instanceof UglifyJS.AST_Call) && (node.start.value == 'require' || (node.start.value == 'new' and node.expression.print_to_string()=="require"))
         text=node.print_to_string({ beautify: false })
 #        console.log(text)
-        args=node.args
+        #expression argument takes precedence over the first argument of require
+        requireArgs=node?.expression?.args
+        if _.isEmpty(requireArgs)
+          requireArgs=node.args
         try
-          handleRequireNode(text,args)
+          handleRequireNode(text,requireArgs)
         catch me
-          a=1+2
+          console.log("Warning!:")
+          console.log("unhandled require type in file: " + file + " the problematic statement: " + text + " probably something fancy going on " + " the error: " + me.message)
         return true
       else if  (node instanceof UglifyJS.AST_Call) && (node.start.value == 'new' and node.expression.start.value=="(" and node.expression.print_to_string().indexOf("require")!=-1)
         args=node.expression.args

@@ -107,46 +107,56 @@
     if (isOnlyNonNativeNonNpm == null) {
       isOnlyNonNativeNonNpm = true;
     }
+    r = [];
     handleRequireNode = function(text, args) {
-      var me, pathOfModule, pathOfModuleLoc, pathOfModuleLocStats, pathOfModuleRaw, rs;
+      var hasPathInIt, me, pathOfModule, pathOfModuleLoc, pathOfModuleLocStats, pathOfModuleRaw, rs;
       if (args.length !== 1) {
         throw new Error("in file: " + file + " require supposed to have 1 argument: " + text);
       }
       pathOfModuleRaw = args[0].value;
-      pathOfModuleLoc = path.resolve(fileDir, pathOfModuleRaw);
-      pathOfModuleLocStats = (function() {
-        try {
-          return fs.lstatSync(pathOfModuleLoc);
-        } catch (_error) {
-          me = _error;
-        }
-      })();
-      if (pathOfModuleLocStats && pathOfModuleLocStats.isDirectory()) {
-        throw new Error("in file: " + file + " require for a directory not supported " + text);
+      if (pathOfModuleRaw == null) {
+        throw new Error("probably dynamic");
       }
-      pathOfModule = packageUtils.getIfNonNativeNotFilteredNonNpm(pathOfModuleLoc, [], possibleExtensions);
-      rs = {
-        text: text,
-        path: pathOfModule
-      };
-      if (!isOnlyNonNativeNonNpm || pathOfModule) {
-        return r.push(rs);
+      hasPathInIt = !_.isEmpty(pathOfModuleRaw.match("/")) || !_.isEmpty(pathOfModuleRaw.match(/\\/));
+      if (hasPathInIt) {
+        pathOfModuleLoc = path.resolve(fileDir, pathOfModuleRaw);
+        pathOfModuleLocStats = (function() {
+          try {
+            return fs.lstatSync(pathOfModuleLoc);
+          } catch (_error) {
+            me = _error;
+          }
+        })();
+        if (pathOfModuleLocStats && pathOfModuleLocStats.isDirectory()) {
+          throw new Error("in file: " + file + " require for a directory not supported " + text);
+        }
+        pathOfModule = packageUtils.getIfNonNativeNotFilteredNonNpm(pathOfModuleLoc, [], possibleExtensions);
+        rs = {
+          text: text,
+          path: pathOfModule
+        };
+        if (!isOnlyNonNativeNonNpm || pathOfModule) {
+          return r.push(rs);
+        }
       }
     };
-    r = [];
     fileDir = path.dirname(file);
     ast.walk(new UglifyJS.TreeWalker(function(node) {
-      var a, args, me, text;
+      var args, me, requireArgs, text, _ref;
       if ((node instanceof UglifyJS.AST_Call) && (node.start.value === 'require' || (node.start.value === 'new' && node.expression.print_to_string() === "require"))) {
         text = node.print_to_string({
           beautify: false
         });
-        args = node.args;
+        requireArgs = node != null ? (_ref = node.expression) != null ? _ref.args : void 0 : void 0;
+        if (_.isEmpty(requireArgs)) {
+          requireArgs = node.args;
+        }
         try {
-          handleRequireNode(text, args);
+          handleRequireNode(text, requireArgs);
         } catch (_error) {
           me = _error;
-          a = 1 + 2;
+          console.log("Warning!:");
+          console.log("unhandled require type in file: " + file + " the problematic statement: " + text + " probably something fancy going on " + " the error: " + me.message);
         }
         return true;
       } else if ((node instanceof UglifyJS.AST_Call) && (node.start.value === 'new' && node.expression.start.value === "(" && node.expression.print_to_string().indexOf("require") !== -1)) {

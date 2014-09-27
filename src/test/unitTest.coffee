@@ -102,3 +102,5 @@ exports.testMergeWithFilterAndUglifyAndStrProtection=(test)->
   test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
 
   test.done()
+
+
