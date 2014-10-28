@@ -1,4 +1,5 @@
 fs = require('fs');
+fsExtra = require('fs-extra');
 NodeUglifier=require("../NodeUglifier")
 packageUtils=require('../libs/packageUtils')
 path = require('path')
@@ -35,6 +36,15 @@ exports.testPackageUtils=(test)->
 
   test.done()
 
+exports.testDependenciesExport=(test)->
+  exportDir="lib_test_project_export/"
+  nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{rngSeed:"hello"})
+  nodeUglifier.exportDependencies(exportDir,{coffee:{src:"lib_compiled"}})
+  test.ok(fsExtra.existsSync(path.resolve(exportDir)))
+  test.ok(fsExtra.existsSync(path.resolve(exportDir + "/src")))
+  test.ok(fsExtra.existsSync(path.resolve(exportDir + "/lib_compiled")))
+  test.done()
+
 
 exports.testMerge=(test)->
 
@@ -52,6 +62,8 @@ exports.testMerge=(test)->
   test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
 
   test.done()
+
+
 
 
 exports.testMergeWithFilter=(test)->

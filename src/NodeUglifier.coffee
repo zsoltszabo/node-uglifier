@@ -14,7 +14,6 @@ fs = require('fs');
 _ = require('underscore')
 sugar = require('sugar')
 path = require('path')
-sh = require('execSync')
 packageUtils=require('./libs/packageUtils')
 cryptoUtils=require('./libs/cryptoUtils')
 UglifyJS=require('uglify-js')
@@ -35,7 +34,11 @@ class NodeUglifier
     @options={mergeFileFilter:[],newFilteredFileDir:"./lib_external",containerName:"cachedModules",rngSeed:null,licenseFile:null,fileExtensions:["js","coffee","json"],suppressFilteredDependentError:false}
     _.extend(@options,options)
 
-    @mainFileAbs=path.resolve(process.cwd(),mainFile)
+    #if we give full path it should handle it
+
+    @mainFileAbs=path.resolve(mainFile)||path.resolve(process.cwd(),mainFile)
+#    catch me
+#      debug=1
 
     if !fs.existsSync(@mainFileAbs) then throw new Error("main file not found " + @mainFileAbs)
     else
@@ -202,6 +205,56 @@ class NodeUglifier
 
     if !_.isEmpty(r.cycles) then throw new Errors.CyclicDependencies(r.cycles)
     return this
+
+  #exportDir - the whole dependency structure relative to the project root will be placed here
+  #srcDirMap - this is an object like {coffee:{src:"lib_compiled",etc:blabla}} so if the value is found in a dependency folder than key file extendison file is searched in the key folder
+  exportDependencies:(exportDir,srcDirMap=null)->
+    sourceFileDidNotExistArr=[]
+    if !@lastResult then @merge()
+    if !@lastResult.pathOrder
+      throw new Error("there was no dependencies to export")
+      return
+    exportDirAbs=path.resolve(exportDir)||path.resolve(process.cwd(),exportDir)
+    projectDir=process.cwd()
+    #path is used as library
+    for p in @lastResult.pathOrder
+      #find the sub Dirs after root
+      if p.indexOf(projectDir)!=0
+        throw new Error("#{p} dependency not found each dependency should be in the project Dir: #{projectDir}")
+      baseDir=path.dirname(p[projectDir.length+1..])
+      baseName=path.basename(p)
+      extension=path.extname(p)
+      baseNameNoExtension=baseName[0..(baseName.length-extension.length-1)]
+      #copy file part
+      newFile=path.resolve(path.join(exportDirAbs,baseDir,baseName))
+      fsExtra.ensureDirSync(path.dirname(newFile))
+      fs.writeFileSync(newFile,p)
+      #find corresponding files and copy them too
+      if srcDirMap
+        for mirrorExt,fromToMap of srcDirMap
+          toFromMap=_.invert(fromToMap)
+          for to,from of toFromMap
+            otherBaseDir=baseDir.replace(to,from)
+            if otherBaseDir==baseDir then continue
+            otherFile=path.join(path.resolve(process.cwd(),otherBaseDir),baseNameNoExtension + "." + mirrorExt)
+            baseNameOther=path.basename(otherFile)
+            if fsExtra.existsSync(otherFile)
+              #file exists do the copy
+              newFileOther=path.resolve(path.join(exportDirAbs,otherBaseDir,baseNameOther))
+              #copy file part
+              fsExtra.ensureDirSync(path.dirname(newFileOther))
+              fs.writeFileSync(newFileOther,otherFile)
+            else
+              sourceFileDidNotExistArr.push(otherFile)
+            console.log(otherFile)
+    for sourceFileDidNotExist in sourceFileDidNotExistArr
+      console.log("WARNING source file did not exist: " + sourceFileDidNotExist)
+
+
+
+
+
+
 
   toString:()->
     return @lastResult.source.toString()
