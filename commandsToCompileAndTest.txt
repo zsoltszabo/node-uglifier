@@ -1,0 +1,7 @@
+Compile coffee sources:
+coffee -m -wco lib_compiled src
+
+
+To run unit tests, after intalling nodeunit, adding to path...
+nodeunit lib_compiled\test\unitTest.js
+

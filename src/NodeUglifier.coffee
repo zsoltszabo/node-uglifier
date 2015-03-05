@@ -325,3 +325,10 @@ module.exports=NodeUglifier
 
 
 
+#npm publish
+#
+#uglifyjs test_man_combined.js -c warnings  -m toplevel -r 'require,exports' -o test_man_combined.min.js --source-map test_man_combined.map --screw-ie8
+#
+#//drop_console=true
+#
+#process,GLOBAL,require,exports

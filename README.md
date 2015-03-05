@@ -4,6 +4,9 @@ node-uglifier
 As I have just completed a huge pure Nodejs project in 80+ files. I started to search for methods to have at least a minimal protection for my server side code.
 I found no simple solution that could handle the **NodeJS** module system automatically so I created **node-uglifier**. My almost 500Kb code in about 80 files got packed into a single file with around 150Kb size.
 
+Life safer new feature: Export all your dependencies including optional source files (like coffee) to a new folder. So if you have many "main files" within your project folder
+and a lot of common dependencies for them this saves your ass if you have to give your co worker the minimal set of files that one of the main needs.
+
 If you like the project and you want me to share developements in the future too.
 Please take 15 seconds of your time and visit my GITHUB page too to pass some love in the form of stars there. Thanks!
 https://github.com/zsoltszabo/node-uglifier
@@ -39,6 +42,18 @@ You can find examples in the lib_compiled/test/unitTest.js. Here is a taste of h
 *  (new NodeUglifier("lib_compiled/test/testproject/main.js")).uglify().exportToFile("lib_compiled/test/resultFiles/simpleMergeAndUglify.js");
 
 
+
+### The dependencies extracting works like this:
+*  exportDir="lib_test_project_export/"
+*  nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{rngSeed:"hello"})
+*  nodeUglifier.exportDependencies(exportDir,{coffee:{src:"lib_compiled"}})
+The second parameter to exportDependencies is optional, handy if you have coffee source files too. Basically it searches in the arbitrary named "src" folder for the same file as in the arbitrary named "lib_compiled" folder
+but with the "coffee" extension instead of the js extension. If a file is not found, written out to console with WARNING.
+
+So the above example created the lib_test_project_export/src and lib_test_project_export/lib_compiled folders with the minimal set of js and coffee files that are required for
+
+
+
 Extra
 --------
 You can keep files external if you pass an option to the NodeUglifier class.
@@ -49,19 +64,12 @@ You can keep files external if you pass an option to the NodeUglifier class.
 They will be copied to the ./lib_external folder and references to them will be modified in the merged file.
 
 +1
-Life safer new feature: Export all your dependencies including source files to a new folder. So if you have like many "main files" within your project folder
-and a lot of common dependencies this saves your ass if you have to give your co worker the minimal set of files that one of the main needs. From the testDependenciesExport unit test:
-*  exportDir="lib_test_project_export/"
-*  nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{rngSeed:"hello"})
-*  nodeUglifier.exportDependencies(exportDir,{coffee:{src:"lib_compiled"}})
-The second parameter to exportDependencies is optional, handy if you have coffee source files too. If a source is not found, written out to console with WARNING.
-
-+2
 It handles as well:
  new(require(module))(constructorParams)
  require(module)()
  require(module)(something)
  require('./randomJsonFile.json')
+
 
 Notes
 --------
@@ -70,13 +78,22 @@ Obviously you need to avoid cycles in your merged dependencies. Though they are 
 Also at the moment obviously it cannot handle dynamic module loading. You will get warnings for those.
 
 I like programing in high level interpreted languages but I hate filthy thieves, blackhat hackers. They can steal the fruit of your hard work in just a fraction of the time of that it took you to create it.
-If you have any idea, contribution how to protect a full NodeJS app even better, obfuscate it better just contact me, commit to Github for creds:). I would like to make this project
+If you have an idea, contribution how to protect a full NodeJS app even better, obfuscate it better just contact me, commit to Github for creds:). I would like to make this project
 a one stop shop for NodeJs project protection.
+
+Compile coffee sources:
+coffee -m -wco lib_compiled src
+
+To run unit tests, after installing nodeunit...
+nodeunit lib_compiled\test\unitTest.js
+If you change the code you probably need to change IS_RE_CREATE_TEST_FILES=false to true in the unitTest.js, to not check the new output against the outdated output format.
 
 It is tested on Windows if you find problems on Linux please contact me.
 
 Change log
 --------
+0.3.2-0.3.3 Documentation tidy up
+0.3.1 Small coffee file bug fix in npm version
 0.3.0 Handles require JSON files by changing the source to be correct JS syntax.
 
 0.2.5 Life safer new feature: Export all your dependencies including source files to a new folder
