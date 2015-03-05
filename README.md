@@ -61,6 +61,7 @@ It handles as well:
  new(require(module))(constructorParams)
  require(module)()
  require(module)(something)
+ require('./randomJsonFile.json')
 
 Notes
 --------
@@ -76,6 +77,8 @@ It is tested on Windows if you find problems on Linux please contact me.
 
 Change log
 --------
+0.3.0 Handles require JSON files by changing the source to be correct JS syntax.
+
 0.2.5 Life safer new feature: Export all your dependencies including source files to a new folder
       Basically you can separate your project this way and limit the files your co worker can see.
       see the very short unit test: exports.testDependenciesExport

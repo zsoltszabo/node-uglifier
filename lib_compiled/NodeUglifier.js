@@ -115,6 +115,9 @@
           me = _error;
         }
         source = packageUtils.readFile(filePath).toString();
+        if (_.isEqual(path.extname(filePath), ".json")) {
+          source = "module.exports=(" + source + ");";
+        }
         pathSaltedHash = cryptoUtils.getSaltedHash(filePath, _this.hashAlgorithm, _this.salt);
         if (_this._sourceCodes[pathSaltedHash] == null) {
           _this._sourceCodes[pathSaltedHash] = {

@@ -7,6 +7,23 @@ path = require('path')
 
 IS_RE_CREATE_TEST_FILES=false
 
+exports.testJsonImport=(test)->
+
+  testFile="lib_compiled/test/resultFiles/testJsonImport.js"
+
+  nodeUglifier=new NodeUglifier("lib_compiled/test/testJsonImport/main.js",{rngSeed:"hello"})
+  mergedSource=nodeUglifier.merge().toString()
+
+  try
+    eval(mergedSource)
+  catch me
+    test.fail(me.toString(),"expected no error thrown from combined project")
+
+  if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
+  test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+
+  test.done()
+
 exports.testStuff=(test)->
   t0="./test/test2"
   t0_2="onderscore"
@@ -46,7 +63,7 @@ exports.testDependenciesExport=(test)->
   test.done()
 
 
-exports.testMerge=(test)->
+testMerge=(test)->
 
   testFile="lib_compiled/test/resultFiles/simpleMerge.js"
 
@@ -62,7 +79,6 @@ exports.testMerge=(test)->
   test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
 
   test.done()
-
 
 
 
@@ -114,5 +130,7 @@ exports.testMergeWithFilterAndUglifyAndStrProtection=(test)->
   test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
 
   test.done()
+
+
 
 

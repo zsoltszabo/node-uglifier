@@ -105,6 +105,9 @@ class NodeUglifier
         #do nothing path vertex exists
 
       source=packageUtils.readFile(filePath).toString()
+      if _.isEqual(path.extname(filePath),".json")
+        source="module.exports=(" + source + ");"
+
       #add source and wrapped source
       pathSaltedHash=cryptoUtils.getSaltedHash(filePath,_this.hashAlgorithm,_this.salt)
       if !_this._sourceCodes[pathSaltedHash]?
@@ -117,7 +120,9 @@ class NodeUglifier
       sourceObj=_this._sourceCodes[pathSaltedHash]
       isSourceObjFiltered=(filteredOutFiles.filter((fFile)->return path.normalize(fFile)==path.normalize(filePath)).length>0)
 
+
       ast=packageUtils.getAst(source)
+
       requireStatements=packageUtils.getRequireStatements(ast,filePath,_this.fileExtensions)
       #add salted hashes of files
       requireStatements.each((o,i)->requireStatements[i]= _.extend(o,{pathSaltedHash:cryptoUtils.getSaltedHash(o.path,_this.hashAlgorithm,_this.salt)}))
