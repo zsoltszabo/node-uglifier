@@ -9,7 +9,8 @@ and a lot of common dependencies for them this saves your ass if you have to giv
 
 If you like the project and you want me to share developements in the future too.
 Please take 15 seconds of your time and visit my GITHUB page too to pass some love in the form of stars there. Thanks!
-https://github.com/zsoltszabo/node-uglifier
+[github zsoltszabo](https://github.com/zsoltszabo/node-uglifier)
+
 
 All the examples below are from teh unit tests of the project. Project contains testproject merged and uglified in many non lethal ways:)
 
