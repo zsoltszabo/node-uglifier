@@ -114,10 +114,10 @@ Change log
 --------
 
 0.4.1
-mergeFileFilter now does not change relative position of files to **allow dynamic loading of those files**,
-Fixed doc, fixed dependency export not copying file content.,
-if you want the old functionality of mergeFileFilter usemergeFileFilterWithExport,
-upgraded tests to coffeescript 1.9, that changes source file extension,
+* mergeFileFilter now does not change relative position of files to **allow dynamic loading of those files**,
+* if you want the old functionality of mergeFileFilter usemergeFileFilterWithExport,
+* Fixed doc, fixed dependency export not copying file content.,
+* upgraded tests to coffeescript 1.9, that changes source file extension,
       
       
 0.3.2-0.3.3 Documentation tidy up
@@ -127,26 +127,26 @@ upgraded tests to coffeescript 1.9, that changes source file extension,
 0.3.0 Handles require JSON files by changing the source to be correct JS syntax.
 
 0.2.5 
-Life safer new feature: Export all your dependencies including source files to a new folder
-Basically you can separate your project this way and limit the files your co worker can see.
-see the very short unit test: exports.testDependenciesExport
+* Life safer new feature: Export all your dependencies including source files to a new folder
+* Basically you can separate your project this way and limit the files your co worker can see.
+* see the very short unit test: exports.testDependenciesExport
 
 0.2.3 Removed unused execSync module, (in new Node versions it was giving error)
 
 0.2.1  Readme errors
 
 0.2.0:
-I got inquiry on Github about why meanstack cannot be merged. That project is now included in the testprojects and a new unit test created for it: testOnMeanStack.coffee
-In that test file I write down the issues I had and how I resolved those. In short it had fancy require statements and same filenames as module names.
-Also now there is a "Warning!:" console log for unprocessed require statements. (they will be 95% of the time dynamic ones)
+* I got inquiry on Github about why meanstack cannot be merged. That project is now included in the testprojects and a new unit test created for it: testOnMeanStack.coffee
+* In that test file I write down the issues I had and how I resolved those. In short it had fancy require statements and same filenames as module names.
+* Also now there is a "Warning!:" console log for unprocessed require statements. (they will be 95% of the time dynamic ones)
 
 0.1.8: Throws error for cyclic dependencies, listing all of them.
 
 0.1.6: 
-Bug fix for filtered out dependency check on merged files.
-Added suppressFilteredDependentError:true option. 
-(handy if you want to remove part of project from production, you only have to then delete these files auto from lib_external with your build script)
-new NodeUglifier("lib_compiled/test/testproject/main.js",{suppressFilteredDependentError:true})
+* Bug fix for filtered out dependency check on merged files.
+* Added suppressFilteredDependentError:true option. 
+* (handy if you want to remove part of project from production, you only have to then delete these files auto from lib_external with your build script)
+* new NodeUglifier("lib_compiled/test/testproject/main.js",{suppressFilteredDependentError:true})
 
 0.1.5: Added strings to hex converting to uglify options - nodeUglifier.uglify({strProtectionLvl:1})
 
