@@ -58,7 +58,7 @@ the test_project
 
 Leave out files from merging
 --------
-# They might not need protection, too large, or LOADED DYNAMIC
+**They might not need protection, too large, or LOADED DYNAMIC**
 ```javascript
 //You can keep files external if you pass an option to the NodeUglifier class.
 //mergeFileFilter keeps relative paths to the files
