@@ -13,7 +13,7 @@ https://github.com/zsoltszabo/node-uglifier
 
 All the examples below are from teh unit tests of the project. Project contains testproject merged and uglified in many non lethal ways:)
 
-## install npm install "node-uglifier"
+**npm install "node-uglifier"**
 
 ### merge and uglify
 ```javascript
