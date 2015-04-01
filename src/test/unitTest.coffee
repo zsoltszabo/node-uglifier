@@ -6,7 +6,33 @@ path = require('path')
 #_=require("\x6e\x64\x65\x72\x73\x63\x6f\x72\x65\x6e")
 
 
-IS_RE_CREATE_TEST_FILES=false
+IS_RE_CREATE_TEST_FILES=true
+
+exports.testMergeWithBothExportFilterTypes=(test)->
+
+  testFile="lib_compiled/test/resultFiles/simpleMergeWithBothExportFilterTypes.js"
+
+  nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{rngSeed:"hello",mergeFileFilterWithExport:["./lib_static/test/","./depa/constants.js"],mergeFileFilter:["./depDynamic/filename_used_in_dynamic_require.js"]})
+  mergedSource=nodeUglifier.merge().toString()
+  nodeUglifier.exportToFile(testFile)
+  #dont test equality, heavily coffeescript version dependent due to comments not removed
+  #  test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+
+  try
+    GLOBAL._loadDynamic=true
+    #if main runs without error OK
+    main=require(path.resolve(testFile));
+  catch me
+    test.fail("result file should run without throwing errors")
+
+
+
+  GLOBAL._loadDynamic=false
+  #if main runs without error OK
+  main=require(path.resolve(testFile));
+
+
+  test.done()
 
 exports.testJsonImport=(test)->
 
@@ -21,7 +47,8 @@ exports.testJsonImport=(test)->
     test.fail(me.toString(),"expected no error thrown from combined project")
 
   if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
-  test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+  else
+    test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
 
   test.done()
 
@@ -37,17 +64,17 @@ exports.testPackageUtils=(test)->
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",[]),[])
 
   shouldBeResult1=[ 'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\depa\\constants.js',
-                    'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\depa\\constants.map' ]
+                    'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\depa\\constants.js.map' ]
   #  console.log(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["./depa/"])) #["main","./depa/","./depb/cryptoLoc.js","./depb/depDeep/deepModule"]
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/",["./depa/"]),shouldBeResult1)
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject",["./depa/"]),shouldBeResult1)
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["./depa/"]),shouldBeResult1)
 
   shouldBeResult2=[ 'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\main\\main.js',
-                    'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\main\\main.map',
+                    'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\main\\main.js.map',
                     'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\depb\\cryptoLoc.js',
                     'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\depb\\depDeep\\deepModule\\deepModule.js',
-                    'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\depb\\depDeep\\deepModule\\deepModule.map' ]
+                    'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\depb\\depDeep\\deepModule\\deepModule.js.map' ]
 
 #  console.log(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["main","./depb/cryptoLoc.js","./depb/depDeep/deepModule"]))
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["main","./depb/cryptoLoc.js","./depb/depDeep/deepModule"]),shouldBeResult2)
@@ -57,10 +84,14 @@ exports.testPackageUtils=(test)->
 exports.testDependenciesExport=(test)->
   exportDir="lib_test_project_export/"
   nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{rngSeed:"hello"})
-  nodeUglifier.exportDependencies(exportDir,{coffee:{src:"lib_compiled"}})
+  nodeUglifier.exportDependencies(exportDir,{"coffee":{"src":"lib_compiled"}})
   test.ok(fsExtra.existsSync(path.resolve(exportDir)))
   test.ok(fsExtra.existsSync(path.resolve(exportDir + "/src")))
   test.ok(fsExtra.existsSync(path.resolve(exportDir + "/lib_compiled")))
+  try
+    constantsAfterSeparation=require(path.resolve(exportDir) + "/lib_compiled/test/testproject/depa/constants.js")
+  catch me
+    test.fail("the new constants file should be proper requireable js")
   test.done()
 
 
@@ -76,38 +107,67 @@ testMerge=(test)->
   catch me
     test.fail(me.toString(),"expected no error thrown from combined project")
 
-  if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
-  test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+  nodeUglifier.exportToFile(testFile)
+
+
+
+  #dont test equality, heavily coffeescript version dependent due to comments not removed
+  #  test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
 
   test.done()
 
 
 
-exports.testMergeWithFilter=(test)->
+exports.testMergeWithExportFilter=(test)->
 
   testFile="lib_compiled/test/resultFiles/simpleMergeWithFilter.js"
 
-  nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{rngSeed:"hello",mergeFileFilter:["./lib_static/test/","./depa/constants.js"]})
+  nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{rngSeed:"hello",mergeFileFilterWithExport:["./lib_static/test/","./depa/constants.js"]})
   mergedSource=nodeUglifier.merge().toString()
+  nodeUglifier.exportToFile(testFile)
+  #dont test equality, heavily coffeescript version dependent due to comments not removed
+#  test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
 
-  if IS_RE_CREATE_TEST_FILES then   nodeUglifier.exportToFile(testFile)
+  try
+    GLOBAL._loadDynamic=false
+    #if main runs without error OK
+    main=require(path.resolve(testFile));
+  catch me
+    test.fail("result file should run without throwing errors")
 
-  test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+
+
+  GLOBAL._loadDynamic=false
+  #if main runs without error OK
+  main=require(path.resolve(testFile));
+
 
   test.done()
+
+
+
 
 exports.testMergeWithFilterAndUglify=(test)->
 
   testFile="lib_compiled/test/resultFiles/simpleMergeWithFilterAndUglify.js"
   uglifySourceMap="lib_compiled/test/resultFiles/sourcemaps/simpleMergeWithFilterAndUglify.js"
 
-  nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{rngSeed:"hello",mergeFileFilter:["./lib_static/test/","./depa/constants.js"]})
+  nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{rngSeed:"hello",mergeFileFilterWithExport:["./lib_static/test/","./depa/constants.js"]})
   mergedSource=nodeUglifier.merge().uglify().toString()
 
   if IS_RE_CREATE_TEST_FILES then   nodeUglifier.exportToFile(testFile)
+  else
+    test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+
   nodeUglifier.exportSourceMaps(uglifySourceMap)
 
-  test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+
+  try
+    GLOBAL._loadDynamic=false
+    #if main runs without error OK
+    main=require(path.resolve(testFile));
+  catch me
+    test.fail("result file should run without throwing errors")
 
   test.done()
 
@@ -117,11 +177,19 @@ exports.testMergeWithFilterAndUglifyAndStrProtection=(test)->
   testFile="lib_compiled/test/resultFiles/simpleMergeWithFilterAndUglifyAndStrProtection.js"
   uglifySourceMap="lib_compiled/test/resultFiles/sourcemaps/simpleMergeWithFilterAndUglifyAndStrProtection.js"
 
-  nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{rngSeed:"hello",mergeFileFilter:["./lib_static/test/","./depa/constants.js"]})
+  nodeUglifier=new NodeUglifier("lib_compiled/test/testproject/main.js",{rngSeed:"hello",mergeFileFilterWithExport:["./lib_static/test/","./depa/constants.js"]})
   mergedSource=nodeUglifier.merge().uglify({strProtectionLvl:1}).toString()
 
   if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
-  nodeUglifier.exportSourceMaps(uglifySourceMap)
+  else
+    nodeUglifier.exportSourceMaps(uglifySourceMap)
+
+  try
+    GLOBAL._loadDynamic=false
+    #if main runs without error OK
+    main=require(path.resolve(testFile));
+  catch me
+    test.fail("result file should run without throwing errors")
 
 #  try
 #    eval(mergedSource)

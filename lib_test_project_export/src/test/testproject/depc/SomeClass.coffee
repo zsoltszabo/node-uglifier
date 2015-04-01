@@ -1,1 +1,8 @@
-C:\DEV\GITHOME\git5\node-uglifier\src\test\testproject\depc\SomeClass.coffee
+class SomeClass
+
+  constructor:(@initStr)->
+
+  get:()->
+    return @initStr
+
+module.exports=SomeClass

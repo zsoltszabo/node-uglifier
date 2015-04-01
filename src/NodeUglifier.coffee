@@ -22,8 +22,8 @@ util=require("util")
 saltLength=20
 UGLIFY_SOURCE_MAP_TOKEN="UGLIFY_SOURCE_MAP_TOKEN"
 #default options below
-#options={mergeFileFilter:[],containerName:"cachedModules"}
-### mergeFileFilter ###
+#options={mergeFileFilterWithExport:[],containerName:"cachedModules"}
+### mergeFileFilterWithExport ###
 #if the file has require statements to merged files, than error is thrown, so they should not depend on your merge project files
 #path is relative to the main file
 #can be directory, than none of the files in it is merged
@@ -31,7 +31,7 @@ UGLIFY_SOURCE_MAP_TOKEN="UGLIFY_SOURCE_MAP_TOKEN"
 class NodeUglifier
   constructor:(mainFile,options={})->
     #defaults
-    @options={mergeFileFilter:[],newFilteredFileDir:"./lib_external",containerName:"cachedModules",rngSeed:null,licenseFile:null,fileExtensions:["js","coffee","json"],suppressFilteredDependentError:false}
+    @options={mergeFileFilterWithExport:[],mergeFileFilter:[],newFilteredFileDir:"./lib_external",containerName:"cachedModules",rngSeed:null,licenseFile:null,fileExtensions:["js","coffee","json"],suppressFilteredDependentError:false}
     _.extend(@options,options)
 
     #if we give full path it should handle it
@@ -55,6 +55,8 @@ class NodeUglifier
 
     @statistics={}
 
+    @filteredOutFiles=packageUtils.getMatchingFiles(@mainFileAbs,@options.mergeFileFilter)
+
 
     @lastResult=null
 
@@ -65,13 +67,22 @@ class NodeUglifier
   getRequireSubstitutionForMerge:(serial)->
     return @getSourceContainer(serial) + ".exports"
 
-  getNewRelativePathForFiltered:(pathAbs)->
+  getNewRelativePathForFilteredWithExport:(pathAbs)=>
     path.join(@options.newFilteredFileDir,path.basename(pathAbs))
 
-  getRequireSubstitutionForFiltered:(pathAbs)->
-    relFile=@getNewRelativePathForFiltered(pathAbs)
+
+  getNewRelativePathForFiltered:(pathAbs)=>
+    relPath=path.relative(path.dirname(@mainFileAbs),path.dirname(pathAbs))
+    path.join(relPath,path.basename(pathAbs))
+
+  getRequireSubstitutionForFilteredWithExport:(pathAbs,relPathFn)=>
+    relFile=relPathFn(pathAbs)
     relFileNoExt=relFile.replace(path.extname(relFile),"")
     return "require('./" + relFileNoExt.replace("\\","/") + "')"
+
+
+
+
 
   addWrapper:(source,serial)->
     modulesArrayStr=@getSourceContainer(serial)
@@ -94,7 +105,8 @@ class NodeUglifier
     depGraph=new Graph();
 
 
-    filteredOutFiles=packageUtils.getMatchingFiles(@mainFileAbs,@options.mergeFileFilter)
+    filteredOutFilesWithExport=packageUtils.getMatchingFiles(@mainFileAbs,@options.mergeFileFilterWithExport)
+
 
 
     recursiveSourceGrabber=(filePath)->
@@ -118,8 +130,8 @@ class NodeUglifier
 #        a=1+1
 
       sourceObj=_this._sourceCodes[pathSaltedHash]
-      isSourceObjFiltered=(filteredOutFiles.filter((fFile)->return path.normalize(fFile)==path.normalize(filePath)).length>0)
-
+      isSourceObjFilteredWithExport=(filteredOutFilesWithExport.filter((fFile)->return path.normalize(fFile)==path.normalize(filePath)).length>0)
+      isSourceObjFiltered=(_this.filteredOutFiles.filter((fFile)->return path.normalize(fFile)==path.normalize(filePath)).length>0)
 
       ast=packageUtils.getAst(source)
 
@@ -143,7 +155,7 @@ class NodeUglifier
 
         sourceObjDep=_this._sourceCodes[requireStatement.pathSaltedHash]
 
-        if isSourceObjFiltered and packageUtils.getIfNonNativeNotFilteredNonNpm(requireStatement.path,filteredOutFiles,_this.options.fileExtensions)
+        if isSourceObjFilteredWithExport and packageUtils.getIfNonNativeNotFilteredNonNpm(requireStatement.path,filteredOutFilesWithExport,_this.options.fileExtensions)
           #filtered out files are not allowed to have dependency on merged fiels
           msg="filtered files can not have dependency on merged files, file: " + filePath + " dependency: " + requireStatement.path
           if _this.options.suppressFilteredDependentError then console.warn(msg) else throw new Error (msg)
@@ -154,12 +166,16 @@ class NodeUglifier
         sourceObjDep=_this._sourceCodes[requireStatement.pathSaltedHash]
         if !sourceObjDep? then throw new Error(" internal should not happen 1")
         otherSerial=sourceObjDep.serial
-        isSourceObjDepFiltered=(filteredOutFiles.filter((fFile)->return path.normalize(fFile)==path.normalize(requireStatement.path)).length>0)
+
+        isSourceObjDepFilteredWithExport=(filteredOutFilesWithExport.filter((fFile)->return path.normalize(fFile)==path.normalize(requireStatement.path)).length>0)
+        isSourceObjDepFiltered=(_this.filteredOutFiles.filter((fFile)->return path.normalize(fFile)==path.normalize(requireStatement.path)).length>0)
 
 
-        if isSourceObjDepFiltered
+        if isSourceObjDepFilteredWithExport
           #replace with the new path to the filtered out file
-          replacement=_this.getRequireSubstitutionForFiltered(requireStatement.path)
+          replacement=_this.getRequireSubstitutionForFilteredWithExport(requireStatement.path,_this.getNewRelativePathForFilteredWithExport)
+        else if isSourceObjDepFiltered
+          replacement=_this.getRequireSubstitutionForFilteredWithExport(requireStatement.path,_this.getNewRelativePathForFiltered)
         else
           #replace require with wrappedSourceContainerName
           replacement=_this.getRequireSubstitutionForMerge(otherSerial)
@@ -169,15 +185,23 @@ class NodeUglifier
 
 
 
-      if isSourceObjFiltered
+      if isSourceObjFilteredWithExport || isSourceObjFiltered
+
         #no need to wrap filtered out external files
-        basename=path.basename(filePath)
+        if isSourceObjFiltered
+          relPathFnc=_this.getNewRelativePathForFiltered
+          basename=relPathFnc(filePath)
+        else if isSourceObjFilteredWithExport
+          relPathFnc=_this.getNewRelativePathForFilteredWithExport
+          basename=path.basename(filePath)
+
         if r.filteredOutFilesObj[basename]
           filteredOutFilesObj=r.filteredOutFilesObj[basename]
           if filteredOutFilesObj.serial!=sourceObj.serial then throw new Error (" external files with same filename not supported yet")
         else
-          r.filteredOutFilesObj[basename]={pathRel:_this.getNewRelativePathForFiltered(filePath)}
+          r.filteredOutFilesObj[basename]={pathRel:relPathFnc(filePath)}
           _.extend(r.filteredOutFilesObj[basename],sourceObj)
+
       else
         #add wrapped version
         if sourceObj.serial>0
@@ -233,7 +257,9 @@ class NodeUglifier
       #copy file part
       newFile=path.resolve(path.join(exportDirAbs,baseDir,baseName))
       fsExtra.ensureDirSync(path.dirname(newFile))
-      fs.writeFileSync(newFile,p)
+
+      fs.createReadStream(p).pipe(fs.createWriteStream(newFile));
+#      fs.writeFileSync(newFile,p)
       #find corresponding files and copy them too
       if srcDirMap
         for mirrorExt,fromToMap of srcDirMap
@@ -248,7 +274,9 @@ class NodeUglifier
               newFileOther=path.resolve(path.join(exportDirAbs,otherBaseDir,baseNameOther))
               #copy file part
               fsExtra.ensureDirSync(path.dirname(newFileOther))
-              fs.writeFileSync(newFileOther,otherFile)
+
+              fs.createReadStream(otherFile).pipe(fs.createWriteStream(newFileOther));
+#              fs.writeFileSync(newFileOther,otherFile)
             else
               sourceFileDidNotExistArr.push(otherFile)
             console.log(otherFile)
@@ -271,12 +299,19 @@ class NodeUglifier
     fsExtra.ensureDirSync(path.dirname(outFileAbs))
     fs.writeFileSync(outFileAbs,@toString())
     outDirRoot=path.dirname(outFileAbs)
-    _.keys(@lastResult.filteredOutFilesObj).each(
+    _.keys(_this.lastResult.filteredOutFilesObj).each(
       (fileName)->
         copyObj=_this.lastResult.filteredOutFilesObj[fileName]
         newFile=path.resolve(outDirRoot,copyObj.pathRel)
         fsExtra.ensureDirSync(path.dirname(newFile))
         fs.writeFileSync(newFile,copyObj.sourceMod)
+    )
+    (_this.filteredOutFiles).each(
+      (fileName)->
+        pathRel=_this.getNewRelativePathForFiltered(fileName)
+        newFile=path.resolve(outDirRoot,pathRel)
+        fsExtra.ensureDirSync(path.dirname(newFile))
+        fs.createReadStream(fileName).pipe(fs.createWriteStream(newFile));
     )
 
   #both uglify and for modules

@@ -1,1 +1,1 @@
-C:\DEV\GITHOME\git5\node-uglifier\src\test\testproject\depb\depDeep\deepModule.coffee
+module.exports.boothDeepAndShalow = (strIn) -> return "DEEP_TEST" + strIn

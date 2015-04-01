@@ -1,1 +1,1 @@
-C:\DEV\GITHOME\git5\node-uglifier\src\test\testproject\rootDependency.coffee
+module.exports.theNonTrivialFunction = (strIn) -> return "ROOT_TEST_" + strIn
