@@ -114,7 +114,7 @@ It is tested on Windows if you find problems on Linux please contact me.
 Change log
 --------
 
-0.4.1
+0.4.3
 * mergeFileFilter now does not change relative position of files to **allow dynamic loading of those files**,
 * if you want the old functionality of mergeFileFilter usemergeFileFilterWithExport,
 * Fixed doc, fixed dependency export not copying file content.,

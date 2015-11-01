@@ -99,6 +99,17 @@
     return r;
   };
 
+  packageUtils.walkExpressions = function(astNode, parentNode, depth) {
+    if (depth > 5) {
+      return null;
+    }
+    if (astNode.name === "require") {
+      return (parentNode != null ? parentNode.args : void 0) || astNode.args;
+    } else if (astNode.expression != null) {
+      return packageUtils.walkExpressions(astNode.expression, astNode, depth + 1);
+    }
+  };
+
   packageUtils.getRequireStatements = function(ast, file, possibleExtensions, isOnlyNonNativeNonNpm) {
     var fileDir, handleRequireNode, r;
     if (possibleExtensions == null) {
@@ -138,21 +149,26 @@
         if (!isOnlyNonNativeNonNpm || pathOfModule) {
           return r.push(rs);
         }
+      } else {
+        return false;
       }
     };
     fileDir = path.dirname(file);
     ast.walk(new UglifyJS.TreeWalker(function(node) {
-      var args, me, requireArgs, text, _ref;
+      var args, me, requireArgs, text, walkedArgs, _ref;
       if ((node instanceof UglifyJS.AST_Call) && (node.start.value === 'require' || (node.start.value === 'new' && node.expression.print_to_string() === "require"))) {
         text = node.print_to_string({
           beautify: false
         });
         requireArgs = node != null ? (_ref = node.expression) != null ? _ref.args : void 0 : void 0;
+        walkedArgs = packageUtils.walkExpressions(node, null, 1);
         if (_.isEmpty(requireArgs)) {
           requireArgs = node.args;
         }
         try {
-          handleRequireNode(text, requireArgs);
+          if (!handleRequireNode(text, requireArgs) && !_.isEmpty(walkedArgs)) {
+            handleRequireNode(text, walkedArgs);
+          }
         } catch (_error) {
           me = _error;
           console.log("Warning!:");

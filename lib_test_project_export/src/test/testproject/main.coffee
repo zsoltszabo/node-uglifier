@@ -1,3 +1,4 @@
+fun=require("./rootdependency").thenontrivialfunction("blabla");
 _ = require('underscore')
 sugar = require('sugar')
 C=require("./depa/constants")
@@ -8,6 +9,7 @@ crypto	= require('crypto')
 deepModule=new require('./depb/depDeep/deepModule')
 SomeClass=new (require('./depc/SomeClass'))("test1")
 SomeClass2=new require('./depc/SomeClass2')
+
 
 dynamicFileName='./depDynamic/filename_used_in_dynamic_require'
 if GLOBAL._loadDynamic
