@@ -88,7 +88,7 @@ packageUtils.getRequireStatements = (ast, file, possibleExtensions = ["js", "cof
     r = []
 
     handleRequireNode = (text, args)->
-        if args.length != 1 then throw new Error ("in file: " + file + " require supposed to have 1 argument: " + text)
+
         pathOfModuleRaw = args[0].value
 
         if !pathOfModuleRaw? then   throw new Error("probably dynamic")
@@ -131,11 +131,15 @@ packageUtils.getRequireStatements = (ast, file, possibleExtensions = ["js", "cof
 
                     walkedArgs=packageUtils.walkExpressions(node,null,1)
 
+
                     if _.isEmpty(requireArgs)
                         requireArgs = node.args
                     try
-                        if !handleRequireNode(text, requireArgs) and !_.isEmpty(walkedArgs)
-                            handleRequireNode(text, walkedArgs)
+#                        if args.length != 1 then
+#                        throw new Error ("in file: " + file + " require supposed to have 1 argument: " + text)
+                        if  requireArgs.length != 1 or !handleRequireNode(text, requireArgs) and !_.isEmpty(walkedArgs)
+                            text2="require('#{walkedArgs[0].value}')"
+                            handleRequireNode(text2, walkedArgs)
 
                     catch me
                         console.log("Warning!:")
@@ -201,6 +205,12 @@ packageUtils.getSourceHexified = (ast)->
     ast.print(stream);
 
     return stream.toString()
+
+
+#packageUtils.replaceAll=(find, replace, str)->
+#    return str.replace(new RegExp(find, 'g'), replace);
+
+
 
 
 packageUtils.replaceRequireStatement = (textIn, orig, replacement)->

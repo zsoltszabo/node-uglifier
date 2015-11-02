@@ -194,7 +194,12 @@ class NodeUglifier
                     replacement = _this.getRequireSubstitutionForMerge(otherSerial)
                     r.sourceMapModules[_this.getSourceContainer(otherSerial)] = path.relative(path.dirname(_this.mainFileAbs), requireStatement.path)
 
+#                if requireStatement.text.indexOf("rootDependency")>-1
+#                    a=1
+#                    b=2
                 sourceObj.sourceMod = packageUtils.replaceRequireStatement(sourceObj.sourceMod, requireStatement.text, replacement)
+#                sourceObj.sourceMod = packageUtils.replaceRequireStatement(sourceObj.sourceMod, requireStatement.text, replacement)
+#                sourceObj.sourceMod = packageUtils.replaceRequireStatement(sourceObj.sourceMod, requireStatement.text, replacement)
 
 
             if isSourceObjFilteredWithExport || isSourceObjFiltered

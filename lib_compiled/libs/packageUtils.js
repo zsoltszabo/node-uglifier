@@ -121,9 +121,6 @@
     r = [];
     handleRequireNode = function(text, args) {
       var hasPathInIt, me, pathOfModule, pathOfModuleLoc, pathOfModuleLocStats, pathOfModuleRaw, rs;
-      if (args.length !== 1) {
-        throw new Error("in file: " + file + " require supposed to have 1 argument: " + text);
-      }
       pathOfModuleRaw = args[0].value;
       if (pathOfModuleRaw == null) {
         throw new Error("probably dynamic");
@@ -155,7 +152,7 @@
     };
     fileDir = path.dirname(file);
     ast.walk(new UglifyJS.TreeWalker(function(node) {
-      var args, me, requireArgs, text, walkedArgs, _ref;
+      var args, me, requireArgs, text, text2, walkedArgs, _ref;
       if ((node instanceof UglifyJS.AST_Call) && (node.start.value === 'require' || (node.start.value === 'new' && node.expression.print_to_string() === "require"))) {
         text = node.print_to_string({
           beautify: false
@@ -166,8 +163,9 @@
           requireArgs = node.args;
         }
         try {
-          if (!handleRequireNode(text, requireArgs) && !_.isEmpty(walkedArgs)) {
-            handleRequireNode(text, walkedArgs);
+          if (requireArgs.length !== 1 || !handleRequireNode(text, requireArgs) && !_.isEmpty(walkedArgs)) {
+            text2 = "require('" + walkedArgs[0].value + "')";
+            handleRequireNode(text2, walkedArgs);
           }
         } catch (_error) {
           me = _error;

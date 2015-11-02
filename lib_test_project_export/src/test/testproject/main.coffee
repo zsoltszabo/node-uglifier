@@ -1,4 +1,6 @@
-fun=require("./rootdependency").thenontrivialfunction("blabla");
+fun2=require("./rootDependency").theNonTrivialFunction();
+fun=require("./rootDependency").theNonTrivialFunction("blabla");
+
 _ = require('underscore')
 sugar = require('sugar')
 C=require("./depa/constants")
@@ -9,6 +11,9 @@ crypto	= require('crypto')
 deepModule=new require('./depb/depDeep/deepModule')
 SomeClass=new (require('./depc/SomeClass'))("test1")
 SomeClass2=new require('./depc/SomeClass2')
+
+if fun!="ROOT_TEST_blabla"
+    throw new Error("ups did not work we got: " + fun + "  instead of ROOT_TEST_blabla")
 
 
 dynamicFileName='./depDynamic/filename_used_in_dynamic_require'
