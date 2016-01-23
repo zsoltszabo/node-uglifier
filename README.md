@@ -35,7 +35,7 @@ var uglifiedString=nodeUglifier.toString();
 
 ### one liner
 ```javascript
-new NodeUglifier("lib_compiled/test/testproject/main.js")).uglify().exportToFile("lib_compiled/test/resultFiles/simpleMergeAndUglify.js";
+new NodeUglifier("lib_compiled/test/testproject/main.js").uglify().exportToFile("lib_compiled/test/resultFiles/simpleMergeAndUglify.js");
 ```
 
 
