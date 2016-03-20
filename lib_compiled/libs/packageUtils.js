@@ -93,7 +93,7 @@
         return path.normalize(fFile) === path.normalize(r);
       }).length > 0) {
         r = null;
-        console.log(fileAbs + " was filtered ");
+        console.log('  '+fileAbs + " was filtered ");
       }
     }
     return r;
@@ -130,6 +130,7 @@
         pathOfModuleLoc = path.resolve(fileDir, pathOfModuleRaw);
         pathOfModuleLocStats = (function() {
           try {
+            console.log('    require refers to a local source we are already processing');
             return fs.lstatSync(pathOfModuleLoc);
           } catch (_error) {
             me = _error;
@@ -145,39 +146,56 @@
         };
         if (!isOnlyNonNativeNonNpm || pathOfModule) {
           return r.push(rs);
+        } else {
+          console.log('    require refers to a native file or filtered file');
         }
       } else {
+        console.log('    require refers to a node_module');
         return false;
       }
     };
+    var string_truncate = function(str, limit) {
+      str = ''+str;
+      if (str.length > limit)
+        str = str.substring(0,(limit-3)) + '...';
+      return ''+str;
+    };
     fileDir = path.dirname(file);
     ast.walk(new UglifyJS.TreeWalker(function(node) {
-      var args, me, requireArgs, text, text2, walkedArgs, _ref;
-      if ((node instanceof UglifyJS.AST_Call) && (node.start.value === 'require' || (node.start.value === 'new' && node.expression.print_to_string() === "require"))) {
-        text = node.print_to_string({
-          beautify: false
-        });
-        requireArgs = node != null ? (_ref = node.expression) != null ? _ref.args : void 0 : void 0;
-        walkedArgs = packageUtils.walkExpressions(node, null, 1);
-        if (_.isEmpty(requireArgs)) {
-          requireArgs = node.args;
-        }
+      var args, me, requireArgs, text, text2, walkedArgs, _ref, condition;
+      if ((node instanceof UglifyJS.AST_Call) &&
+          (node.start.value==='require' ||
+           (node.start.value==='new' && node.expression.print_to_string()==="require"))) {
+        requireArgs = void 0; try { 
+          requireArgs = node != null ? (_ref = node.expression) != null ? _ref.args : void 0 : void 0;
+          if (_.isEmpty(requireArgs)) requireArgs = node.args;
+          //text = node.print_to_string({ beautify:false });
+          text = "require('"+requireArgs[0].value+"')";
+          walkedArgs = packageUtils.walkExpressions(node, null, 1);
+        } catch(e) { }
+        console.log('  Found require statement    '+string_truncate( node.print_to_string({beautify:false}), 80));
+//console.log('  requireArgs:',JSON.stringify(requireArgs));
         try {
-          if (requireArgs.length !== 1 || !handleRequireNode(text, requireArgs) && !_.isEmpty(walkedArgs)) {
+          // NOTE: If the 1st call to 'handleRequireNode' to throws an error, we want to cacth it since we won't be able
+          // to use walkedArgs instead, on a 2nd call to 'handleRequireNode'       
+          try { condition = (text==null || requireArgs.length!==1 || !handleRequireNode(text, requireArgs) && !_.isEmpty(walkedArgs)); } catch(e) { condition = true; }
+          if (condition) {
             text2 = "require('" + walkedArgs[0].value + "')";
             handleRequireNode(text2, walkedArgs);
           }
         } catch (_error) {
           me = _error;
-          console.log("Warning!:");
-          console.log("unhandled require type in file: " + file + " the problematic statement: " + text + " probably something fancy going on " + " the error: " + me.message);
+          console.log('    WARNING!: unhandled require type in file ['+file+'])');
+          console.log('      In the following statement: '+text);
+          console.log('      Raising the following error: '+me.message);
+          console.log('      Probably something fancy going on.');
         }
         return true;
-      } else if ((node instanceof UglifyJS.AST_Call) && (node.start.value === 'new' && node.expression.start.value === "(" && node.expression.print_to_string().indexOf("require") !== -1)) {
+      } else if ((node instanceof UglifyJS.AST_Call) &&
+                 (node.start.value==='new' && node.expression.start.value==="(" && node.expression.print_to_string().indexOf("require")!== -1)) {
         args = node.expression.args;
         text = "require" + "('" + args[0].value + "')";
         handleRequireNode(text, args);
-        console.log("second " + text);
         return true;
       } else {
 
@@ -262,7 +280,7 @@
       });
     }
     if (!isReplaced) {
-      throw new Error(orig + " was not replaced with " + replacement);
+      throw new Error('  '+orig + " was not replaced with " + replacement);
     }
     return text;
   };

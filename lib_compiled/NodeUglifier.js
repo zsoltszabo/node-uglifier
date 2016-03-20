@@ -46,6 +46,7 @@
         mergeFileFilter: [],
         newFilteredFileDir: "./lib_external",
         containerName: "cachedModules",
+        containerNameGetter: 'getCachedModule',
         rngSeed: null,
         licenseFile: null,
         fileExtensions: ["js", "coffee", "json"],
@@ -61,6 +62,7 @@
       this.salt = cryptoUtils.generateSalt(saltLength);
       this.hashAlgorithm = "sha1";
       this.wrappedSourceContainerName = this.options.containerName;
+      this.wrappedSourceContainerNameGetter = this.options.containerNameGetter;
       this.serialMappings = cryptoUtils.shuffleArray((function() {
         _results = [];
         for (_i = 0; _i <= 10000; _i++){ _results.push(_i); }
@@ -77,7 +79,7 @@
     };
 
     NodeUglifier.prototype.getRequireSubstitutionForMerge = function(serial) {
-      return this.getSourceContainer(serial) + ".exports";
+      return this.wrappedSourceContainerNameGetter + "(" + this.serialMappings[serial] + ")";
     };
 
     NodeUglifier.prototype.getNewRelativePathForFilteredWithExport = function(pathAbs) {
@@ -100,16 +102,28 @@
     NodeUglifier.prototype.addWrapper = function(source, serial) {
       var firstLine, lastLine, modulesArrayStr, secondLine;
       modulesArrayStr = this.getSourceContainer(serial);
-      firstLine = modulesArrayStr + "={exports:{}};" + "\n";
-      secondLine = "(function(module,exports) {";
-      lastLine = "}).call(this," + modulesArrayStr + "," + modulesArrayStr + ".exports);";
-      return "\n" + firstLine + secondLine + source + lastLine;
+      return '\n' + 
+        modulesArrayStr + ' = {' +'\n'+
+        '  exports: {},' +'\n'+
+        '  builder: (function(module,exports) {'+source+'})' +'\n'+
+        '};';
     };
 
     NodeUglifier.prototype.merge = function() {
+      console.log('\nProcessing project...');
+      console.log(  '=====================');
       var depGraph, edgeToRemove, filteredOutFilesWithExport, firstLine, iter, me, r, recursiveSourceGrabber, wasCycle, _this;
       _this = this;
-      firstLine = "var " + this.wrappedSourceContainerName + "=[];";
+      firstLine = '' +
+        'var that = this;' +'\n'+
+        'var '+this.wrappedSourceContainerName+'=[];' +'\n'+
+        'var '+this.wrappedSourceContainerNameGetter+' = function(index) {' +'\n'+
+        '  if ('+this.wrappedSourceContainerName+'[index].builder!=null) {' +'\n'+
+        '    '+this.wrappedSourceContainerName+'[index].builder.call(that,'+this.wrappedSourceContainerName+'[index],'+this.wrappedSourceContainerName+'[index].exports);' +'\n'+
+        '    delete '+this.wrappedSourceContainerName+'[index].builder;' +'\n'+
+        '  }' +'\n'+
+        '  return '+this.wrappedSourceContainerName+'[index].exports;' +'\n'+
+        '};';
       r = {
         source: firstLine,
         filteredOutFilesObj: {},
@@ -120,6 +134,7 @@
       depGraph = new Graph();
       filteredOutFilesWithExport = packageUtils.getMatchingFiles(this.mainFileAbs, this.options.mergeFileFilterWithExport);
       recursiveSourceGrabber = function(filePath) {
+        console.log('Processing file ['+filePath+']');
         var ast, basename, filteredOutFilesObj, isSourceObjDepFiltered, isSourceObjDepFilteredWithExport, isSourceObjFiltered, isSourceObjFilteredWithExport, me, msg, otherSerial, pathSaltedHash, relPathFnc, replacement, requireStatement, requireStatements, source, sourceObj, sourceObjDep, _i, _len;
         try {
           depGraph.addNewVertex(filepath, filepath);
@@ -137,7 +152,7 @@
             serial: _.keys(_this._sourceCodes).length,
             sourceMod: source
           };
-          console.log(filePath + " added to sources ");
+          console.log('  '+filePath+' added to sources');
         }
         sourceObj = _this._sourceCodes[pathSaltedHash];
         isSourceObjFilteredWithExport = filteredOutFilesWithExport.filter(function(fFile) {
@@ -195,6 +210,7 @@
           } else {
             replacement = _this.getRequireSubstitutionForMerge(otherSerial);
             r.sourceMapModules[_this.getSourceContainer(otherSerial)] = path.relative(path.dirname(_this.mainFileAbs), requireStatement.path);
+            console.log('  We will replace this require statement    ',requireStatement.text,'    with this    ',replacement);
           }
           sourceObj.sourceMod = packageUtils.replaceRequireStatement(sourceObj.sourceMod, requireStatement.text, replacement);
         }
@@ -249,6 +265,8 @@
       if (!_.isEmpty(r.cycles)) {
         throw new Errors.CyclicDependencies(r.cycles);
       }
+      console.log('\nSequence of sources to build package file:\n',this.lastResult.pathOrder);
+      console.log('  DONE');
       return this;
     };
 
@@ -317,6 +335,7 @@
     };
 
     NodeUglifier.prototype.exportToFile = function(file) {
+      console.log('\nExporting to file ['+file+']...');
       var outDirRoot, outFileAbs, _this;
       _this = this;
       outFileAbs = path.resolve(file);
@@ -330,13 +349,15 @@
         fsExtra.ensureDirSync(path.dirname(newFile));
         return fs.writeFileSync(newFile, copyObj.sourceMod);
       });
-      return _this.filteredOutFiles.each(function(fileName) {
+      var rtrn = _this.filteredOutFiles.each(function(fileName) {
         var newFile, pathRel;
         pathRel = _this.getNewRelativePathForFiltered(fileName);
         newFile = path.resolve(outDirRoot, pathRel);
         fsExtra.ensureDirSync(path.dirname(newFile));
         return fs.createReadStream(fileName).pipe(fs.createWriteStream(newFile));
       });
+      console.log('  DONE');
+      return rtrn;
     };
 
     NodeUglifier.prototype.exportSourceMaps = function(file) {
@@ -354,6 +375,7 @@
     };
 
     NodeUglifier.prototype.uglify = function(optionsIn) {
+      console.log('\nUglifying...');
       var a, ast, options, res, source;
       if (optionsIn == null) {
         optionsIn = {};
@@ -385,6 +407,7 @@
         fromString: true,
         outSourceMap: UGLIFY_SOURCE_MAP_TOKEN
       }, options));
+      console.log('  DONE');
       this.lastResult.source = res.code;
       this.lastResult.sourceMapUglify = res.map;
       switch (options.strProtectionLvl) {
