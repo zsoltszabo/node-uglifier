@@ -33,7 +33,7 @@
         "seedrandom":">=0.x",
         "sugar": ">=1.4.1",
         "underscore": ">=1.5.2",
-        "uglify-js": ">=2.3",
+        "uglify-js": ">=2.6.2",
         "nodeunit": ">=0.x",
         "fs-extra":">=0.x",
         "optparse":">=0.x"

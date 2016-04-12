@@ -98,7 +98,9 @@ packageUtils.getRequireStatements = (ast, file, possibleExtensions = ["js", "cof
         if hasPathInIt
 #it is not a module
             pathOfModuleLoc = path.resolve(fileDir, pathOfModuleRaw)
-            pathOfModuleLocStats = try fs.lstatSync(pathOfModuleLoc)
+            try
+#                console.log('    require refers to a local source we are already processing');
+                pathOfModuleLocStats =fs.lstatSync(pathOfModuleLoc)
             catch me;
 
             if (pathOfModuleLocStats and pathOfModuleLocStats.isDirectory()) then throw new Error("in file: " + file + " require for a directory not supported " + text)

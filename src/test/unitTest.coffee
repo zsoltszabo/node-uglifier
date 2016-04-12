@@ -26,7 +26,6 @@ exports.testMergeWithBothExportFilterTypes=(test)->
     test.fail("result file should run without throwing errors")
 
 
-
   GLOBAL._loadDynamic=false
   #if main runs without error OK
   main=require(path.resolve(testFile));
@@ -60,24 +59,29 @@ exports.testStuff=(test)->
   console.log("\n")
   test.done()
 
+relativeToDir=(dir)->
+    path.relative(__dirname,dir)
+
+
+
 exports.testPackageUtils=(test)->
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",[]),[])
 
-  shouldBeResult1=[ 'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\depa\\constants.js',
-                    'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\depa\\constants.js.map' ]
+  shouldBeResult1=[ 'testproject\\depa\\constants.js',
+                    'testproject\\depa\\constants.js.map' ]
   #  console.log(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["./depa/"])) #["main","./depa/","./depb/cryptoLoc.js","./depb/depDeep/deepModule"]
-  test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/",["./depa/"]),shouldBeResult1)
-  test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject",["./depa/"]),shouldBeResult1)
-  test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["./depa/"]),shouldBeResult1)
+  test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/",["./depa/"]).map(relativeToDir),shouldBeResult1)
+  test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject",["./depa/"]).map(relativeToDir),shouldBeResult1)
+  test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["./depa/"]).map(relativeToDir),shouldBeResult1)
 
-  shouldBeResult2=[ 'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\main\\main.js',
-                    'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\main\\main.js.map',
-                    'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\depb\\cryptoLoc.js',
-                    'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\depb\\depDeep\\deepModule\\deepModule.js',
-                    'C:\\DEV\\GITHOME\\git5\\node-uglifier\\lib_compiled\\test\\testproject\\depb\\depDeep\\deepModule\\deepModule.js.map' ]
+  shouldBeResult2=[ 'testproject\\main\\main.js',
+                    'testproject\\main\\main.js.map',
+                    'testproject\\depb\\cryptoLoc.js',
+                    'testproject\\depb\\depDeep\\deepModule\\deepModule.js',
+                    'testproject\\depb\\depDeep\\deepModule\\deepModule.js.map' ]
 
 #  console.log(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["main","./depb/cryptoLoc.js","./depb/depDeep/deepModule"]))
-  test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["main","./depb/cryptoLoc.js","./depb/depDeep/deepModule"]),shouldBeResult2)
+  test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["main","./depb/cryptoLoc.js","./depb/depDeep/deepModule"]).map(relativeToDir),shouldBeResult2)
 
   test.done()
 
