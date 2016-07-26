@@ -1,10 +1,10 @@
 {
   "version": 3,
   "file": "constants.js",
-  "sourceRoot": "..\\..\\..\\..\\lib_test_project_export\\src\\test\\testproject\\depa",
+  "sourceRoot": "..\\..\\..\\..",
   "sources": [
-    "constants.coffee"
+    "src\\test\\testproject\\depa\\constants.coffee"
   ],
   "names": [],
-  "mappings": ";AAGA;AAAA,MAAA,gBAAA;;AAAA,EAAA,OAAA,GAAS,sBAAT,CAAA;;AAAA,EACA,OAAA,GAAS,uBADT,CAAA;;AAAA,EAEA,MAAM,CAAC,OAAO,CAAC,MAAf,GAAsB,OAFtB,CAAA;;AAAA,EAGA,MAAM,CAAC,OAAO,CAAC,MAAf,GAAsB,OAHtB,CAAA;AAAA"
+  "mappings": ";AAGA;AAAA,MAAA;;EAAA,OAAA,GAAQ;;EACR,OAAA,GAAQ;;EACR,MAAM,CAAC,OAAO,CAAC,MAAf,GAAsB;;EACtB,MAAM,CAAC,OAAO,CAAC,MAAf,GAAsB;AAHtB"
 }
