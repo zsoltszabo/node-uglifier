@@ -1,10 +1,10 @@
 {
   "version": 3,
   "file": "rootDependency.js",
-  "sourceRoot": "..\\..\\..\\lib_test_project_export\\src\\test\\testproject",
+  "sourceRoot": "..\\..\\..",
   "sources": [
-    "rootDependency.coffee"
+    "src\\test\\testproject\\rootDependency.coffee"
   ],
   "names": [],
-  "mappings": ";AAAA;AAAA,EAAA,MAAM,CAAC,OAAO,CAAC,qBAAf,GAAuC,SAAC,KAAD,GAAA;AAAW,WAAQ,YAAA,GAAc,KAAtB,CAAX;EAAA,CAAvC,CAAA;AAAA"
+  "mappings": ";AAAA;EAAA,MAAM,CAAC,OAAO,CAAC,qBAAf,GAAuC,SAAC,KAAD;AAAW,WAAO,YAAA,GAAe;EAAjC;AAAvC"
 }
