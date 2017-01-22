@@ -16,7 +16,7 @@ sugar = require('sugar')
 path = require('path')
 packageUtils = require('./libs/packageUtils')
 cryptoUtils = require('./libs/cryptoUtils')
-UglifyJS = require('uglify-js')
+UglifyJS = require('uglify-js-harmony')
 util = require("util")
 
 saltLength = 20
@@ -148,7 +148,7 @@ class NodeUglifier
 
             requireStatements = packageUtils.getRequireStatements(ast, filePath, _this.fileExtensions)
             #add salted hashes of files
-            requireStatements.each((o, i)-> requireStatements[i] = _.extend(o,
+            requireStatements.forEach((o, i)-> requireStatements[i] = _.extend(o,
                 {pathSaltedHash: cryptoUtils.getSaltedHash(o.path, _this.hashAlgorithm, _this.salt)}))
 
 
@@ -315,14 +315,14 @@ class NodeUglifier
         fsExtra.ensureDirSync(path.dirname(outFileAbs))
         fs.writeFileSync(outFileAbs, @toString())
         outDirRoot = path.dirname(outFileAbs)
-        _.keys(_this.lastResult.filteredOutFilesObj).each(
+        _.keys(_this.lastResult.filteredOutFilesObj).forEach(
             (fileName)->
                 copyObj = _this.lastResult.filteredOutFilesObj[fileName]
                 newFile = path.resolve(outDirRoot, copyObj.pathRel)
                 fsExtra.ensureDirSync(path.dirname(newFile))
                 fs.writeFileSync(newFile, copyObj.sourceMod)
         )
-        (_this.filteredOutFiles).each(
+        (_this.filteredOutFiles).forEach(
             (fileName)->
                 pathRel = _this.getNewRelativePathForFiltered(fileName)
                 newFile = path.resolve(outDirRoot, pathRel)

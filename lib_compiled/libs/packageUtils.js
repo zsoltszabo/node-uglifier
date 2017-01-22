@@ -6,7 +6,7 @@
 
   fs = require('fs');
 
-  UglifyJS = require('uglify-js');
+  UglifyJS = require('uglify-js-harmony');
 
   path = require('path');
 
@@ -120,7 +120,7 @@
     }
     r = [];
     handleRequireNode = function(text, args) {
-      var hasPathInIt, me, pathOfModule, pathOfModuleLoc, pathOfModuleLocStats, pathOfModuleRaw, rs;
+      var error, hasPathInIt, me, pathOfModule, pathOfModuleLoc, pathOfModuleLocStats, pathOfModuleRaw, rs;
       pathOfModuleRaw = args[0].value;
       if (pathOfModuleRaw == null) {
         throw new Error("probably dynamic");
@@ -128,14 +128,11 @@
       hasPathInIt = !_.isEmpty(pathOfModuleRaw.match("/")) || !_.isEmpty(pathOfModuleRaw.match(/\\/));
       if (hasPathInIt) {
         pathOfModuleLoc = path.resolve(fileDir, pathOfModuleRaw);
-        pathOfModuleLocStats = (function() {
-          var error;
-          try {
-            return fs.lstatSync(pathOfModuleLoc);
-          } catch (error) {
-            me = error;
-          }
-        })();
+        try {
+          pathOfModuleLocStats = fs.lstatSync(pathOfModuleLoc);
+        } catch (error) {
+          me = error;
+        }
         if (pathOfModuleLocStats && pathOfModuleLocStats.isDirectory()) {
           throw new Error("in file: " + file + " require for a directory not supported " + text);
         }
