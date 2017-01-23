@@ -31,12 +31,13 @@
     "contributors": [],
     "dependencies": {
         "seedrandom":">=0.x",
-        "sugar": ">=1.4.1",
+        "sugar": "=2.0.4",
         "underscore": ">=1.5.2",
-        "uglify-js": ">=2.3",
-        "nodeunit": ">=0.x",
-        "fs-extra":">=0.x",
-        "optparse":">=0.x"
+//        "uglify-js": "=2.7.5",
+        "nodeunit": "=0.10.2",
+        "fs-extra":"=2.0",
+        "optparse":">=0.x",
+        "uglify-js-harmony":"=2.6.2"
     },
     "devDependencies":{
         "nodeunit":">=0.x"

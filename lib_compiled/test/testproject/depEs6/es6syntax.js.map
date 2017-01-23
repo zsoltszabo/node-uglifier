@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "es6syntax.js",
+  "sourceRoot": "..\\..\\..\\..\\src\\test\\testproject\\depEs6",
+  "sources": [
+    "es6syntax.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;;AAAA"
+}
