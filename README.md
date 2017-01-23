@@ -115,10 +115,10 @@ Change log
 --------
 
 0.5
-*Updated dependencies (resolved 'requireStatements.each is not a function' bug from new SugarJs version)
-    fixed dependencies to exact versions, to avoid breaking compatibility
-*Added ES6 syntax support. Note it is still not stable in the Uglify-Js-Harmony branch that I use for uglifying the combined code
-    import does not work
+* Updated dependencies (resolved 'requireStatements.each is not a function' bug from new SugarJs version)
+** fixed dependencies to exact versions, to avoid breaking compatibility
+* Added ES6 syntax support. Note it is still not stable in the Uglify-Js-Harmony branch that I use for uglifying the combined code
+** import does not work
 
 0.4.3
 * mergeFileFilter now does not change relative position of files to **allow dynamic loading of those files**,
