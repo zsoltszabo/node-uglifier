@@ -1,9 +1,9 @@
 {
   "version": 3,
   "file": "cryptoLoc.js",
-  "sourceRoot": "..\\..\\..\\..",
+  "sourceRoot": "..\\..\\..\\..\\lib_test_project_export\\src\\test\\testproject\\depb",
   "sources": [
-    "src\\test\\testproject\\depb\\cryptoLoc.coffee"
+    "cryptoLoc.coffee"
   ],
   "names": [],
   "mappings": ";AAAA;AAAA,MAAA;;EAAA,YAAA,GAAa,OAAA,CAAQ,kCAAR;;EACb,UAAA,GAAW,OAAA,CAAQ,sBAAR;;EAEX,SAAA,GAAY,MAAM,CAAC;;EAEnB,SAAS,CAAC,GAAV,GAAc,SAAC,IAAD,EAAM,GAAN;AACZ,QAAA;IAAA,GAAA,GAAI,YAAY,CAAC,GAAb,CAAiB,IAAjB,EAAsB,UAAU,CAAC,kBAAX,CAA8B,GAA9B,CAAtB;AACJ,WAAO;EAFK;;EAId,SAAS,CAAC,GAAV,GAAc,SAAC,IAAD,EAAM,GAAN;AACZ,QAAA;IAAA,GAAA,GAAI,YAAY,CAAC,GAAb,CAAiB,IAAjB,EAAsB,UAAU,CAAC,kBAAX,CAA8B,GAA9B,CAAtB;AACJ,WAAO;EAFK;AATd"

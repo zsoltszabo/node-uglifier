@@ -60,20 +60,21 @@ if (result!=="Hi Justin!") {
     throw new Error("ups arrow function did not work:");
 }
 
-function calculateTotalAmount (fl) {
-    var amount = 0;
-    if (fl) {
-        const amount = 1;
-    }
-    {
-        let amount = 2 ;
-    }
-    return amount;
-}
-
-if (calculateTotalAmount(true)!==0) {
-    throw new Error("let word did not work:");
-}
+//let and const is flakey in Uglify-Harmony atm
+//function calculateTotalAmount (fl) {
+//    var amount = 0;
+//    if (fl) {
+//        let amount = 1;
+//    }
+//    {
+//        let amount = 2 ;
+//    }
+//    return amount;
+//}
+//
+//if (calculateTotalAmount(true)!==0) {
+//    throw new Error("let word did not work:");
+//}
 
 
 

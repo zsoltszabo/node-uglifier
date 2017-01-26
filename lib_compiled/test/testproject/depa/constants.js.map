@@ -1,9 +1,9 @@
 {
   "version": 3,
   "file": "constants.js",
-  "sourceRoot": "..\\..\\..\\..",
+  "sourceRoot": "..\\..\\..\\..\\lib_test_project_export\\src\\test\\testproject\\depa",
   "sources": [
-    "src\\test\\testproject\\depa\\constants.coffee"
+    "constants.coffee"
   ],
   "names": [],
   "mappings": ";AAGA;AAAA,MAAA;;EAAA,OAAA,GAAQ;;EACR,OAAA,GAAQ;;EACR,MAAM,CAAC,OAAO,CAAC,MAAf,GAAsB;;EACtB,MAAM,CAAC,OAAO,CAAC,MAAf,GAAsB;AAHtB"

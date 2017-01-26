@@ -113,6 +113,8 @@ It is tested on Windows if you find problems on Linux please contact me.
 
 Change log
 --------
+0.5.1
+*Added express server test case
 
 0.5
 * Updated dependencies (resolved 'requireStatements.each is not a function' bug from new SugarJs version)

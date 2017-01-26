@@ -53,22 +53,39 @@ exports.testJsonImport=(test)->
 
 exports.testEs6=(test)->
 
-#    testFile="lib_compiled/test/resultFiles/testJsonImport.js"
+    testFile="lib_compiled/test/resultFiles/es6proj.js"
 
     nodeUglifier=new NodeUglifier("lib_compiled/test/es6proj/main.js",{rngSeed:"hello"})
-    mergedSource=nodeUglifier.merge().toString()
+    mergedSource=nodeUglifier.merge().uglify().toString()
 
     try
         eval(mergedSource)
     catch me
         test.fail(me.toString(),"expected no error thrown from combined project")
 
-    module.exports.greeter.sayHi('Justin')
+
+    if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
+    else
+        test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+
+    test.done()
+
+exports.testExpress=(test)->
+
+    testFile="lib_compiled/test/resultFiles/express.js"
+
+    nodeUglifier=new NodeUglifier("lib_compiled/test/express/server.js",{rngSeed:"hello"})
+    mergedSource=nodeUglifier.merge().uglify().toString()
+
+    try
+        eval(mergedSource)
+    catch me
+        test.fail(me.toString(),"expected no error thrown from combined project")
 
 
-#    if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
-#    else
-#        test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+    if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
+    else
+        test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
 
     test.done()
 

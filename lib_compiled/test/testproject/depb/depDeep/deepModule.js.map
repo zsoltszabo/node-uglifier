@@ -1,9 +1,9 @@
 {
   "version": 3,
   "file": "deepModule.js",
-  "sourceRoot": "..\\..\\..\\..\\..",
+  "sourceRoot": "..\\..\\..\\..\\..\\lib_test_project_export\\src\\test\\testproject\\depb\\depDeep",
   "sources": [
-    "src\\test\\testproject\\depb\\depDeep\\deepModule.coffee"
+    "deepModule.coffee"
   ],
   "names": [],
   "mappings": ";AAAA;EAAA,MAAM,CAAC,OAAO,CAAC,kBAAf,GAAoC,SAAC,KAAD;AAAW,WAAO,WAAA,GAAc;EAAhC;AAApC"

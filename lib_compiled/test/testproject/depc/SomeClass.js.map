@@ -1,9 +1,9 @@
 {
   "version": 3,
   "file": "SomeClass.js",
-  "sourceRoot": "..\\..\\..\\..",
+  "sourceRoot": "..\\..\\..\\..\\lib_test_project_export\\src\\test\\testproject\\depc",
   "sources": [
-    "src\\test\\testproject\\depc\\SomeClass.coffee"
+    "SomeClass.coffee"
   ],
   "names": [],
   "mappings": ";AAAA;AAAA,MAAA;;EAAM;IAEQ,mBAAC,OAAD;MAAC,IAAC,CAAA,UAAD;IAAD;;wBAEZ,GAAA,GAAI,SAAA;AACF,aAAO,IAAC,CAAA;IADN;;;;;;EAGN,MAAM,CAAC,OAAP,GAAe;AAPf"
