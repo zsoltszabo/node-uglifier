@@ -14,6 +14,27 @@
 
   IS_RE_CREATE_TEST_FILES = true;
 
+  exports.directoryImportTest = function(test) {
+    var error, me, mergedSource, nodeUglifier, testFile;
+    testFile = "lib_compiled/test/resultFiles/directoryImportTest.js";
+    nodeUglifier = new NodeUglifier("lib_compiled/test/testDirectoryImport/main.js", {
+      rngSeed: "hello"
+    });
+    mergedSource = nodeUglifier.merge().toString();
+    try {
+      eval(mergedSource);
+    } catch (error) {
+      me = error;
+      test.fail(me.toString(), "expected no error thrown from combined project");
+    }
+    if (IS_RE_CREATE_TEST_FILES) {
+      nodeUglifier.exportToFile(testFile);
+    } else {
+      test.equals(packageUtils.readFile(testFile).toString(), mergedSource);
+    }
+    return test.done();
+  };
+
   exports.testMergeWithBothExportFilterTypes = function(test) {
     var error, main, me, mergedSource, nodeUglifier, testFile;
     testFile = "lib_compiled/test/resultFiles/simpleMergeWithBothExportFilterTypes.js";

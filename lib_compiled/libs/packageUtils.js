@@ -134,7 +134,7 @@
           me = error;
         }
         if (pathOfModuleLocStats && pathOfModuleLocStats.isDirectory()) {
-          throw new Error("in file: " + file + " require for a directory not supported " + text);
+          pathOfModuleLoc = path.resolve(pathOfModuleLoc, "index");
         }
         pathOfModule = packageUtils.getIfNonNativeNotFilteredNonNpm(pathOfModuleLoc, [], possibleExtensions);
         rs = {

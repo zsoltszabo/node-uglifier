@@ -113,6 +113,9 @@ It is tested on Windows if you find problems on Linux please contact me.
 
 Change log
 --------
+0.5.2
+*Added directory index require support
+
 0.5.1
 *Added express server test case
 

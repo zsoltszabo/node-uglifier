@@ -93,17 +93,19 @@ packageUtils.getRequireStatements = (ast, file, possibleExtensions = ["js", "cof
 
         if !pathOfModuleRaw? then   throw new Error("probably dynamic")
 
+        #has / or \ in the string
         hasPathInIt = (!_.isEmpty(pathOfModuleRaw.match("/")) || !_.isEmpty(pathOfModuleRaw.match(/\\/)))
 
         if hasPathInIt
-#it is not a module
+            #it is not a module
             pathOfModuleLoc = path.resolve(fileDir, pathOfModuleRaw)
             try
-#                console.log('    require refers to a local source we are already processing');
                 pathOfModuleLocStats =fs.lstatSync(pathOfModuleLoc)
             catch me;
 
-            if (pathOfModuleLocStats and pathOfModuleLocStats.isDirectory()) then throw new Error("in file: " + file + " require for a directory not supported " + text)
+            if (pathOfModuleLocStats and pathOfModuleLocStats.isDirectory())
+                pathOfModuleLoc=path.resolve(pathOfModuleLoc, "index")
+
 
             #if path can be resolved and it is file than it is non native, non npm
             pathOfModule = packageUtils.getIfNonNativeNotFilteredNonNpm(pathOfModuleLoc, [], possibleExtensions)
@@ -119,6 +121,7 @@ packageUtils.getRequireStatements = (ast, file, possibleExtensions = ["js", "cof
                 r.push(rs)
 
         else
+            #it is module
             return false
 
 
