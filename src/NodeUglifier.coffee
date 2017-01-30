@@ -88,7 +88,7 @@ class NodeUglifier
     getRequireSubstitutionForFilteredWithExport: (pathAbs, relPathFn)=>
         relFile = relPathFn(pathAbs)
         relFileNoExt = relFile.replace(path.extname(relFile), "")
-        return "require('./" + relFileNoExt.replace("\\", "/") + "')"
+        return "require('./" + relFileNoExt.replace(/\\/g, "/") + "')"
 
 
 

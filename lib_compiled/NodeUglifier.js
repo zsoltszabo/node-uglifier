@@ -95,7 +95,7 @@
       var relFile, relFileNoExt;
       relFile = relPathFn(pathAbs);
       relFileNoExt = relFile.replace(path.extname(relFile), "");
-      return "require('./" + relFileNoExt.replace("\\", "/") + "')";
+      return "require('./" + relFileNoExt.replace(/\\/g, "/") + "')";
     };
 
     NodeUglifier.prototype.addWrapper = function(source, serial) {

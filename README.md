@@ -113,6 +113,9 @@ It is tested on Windows if you find problems on Linux please contact me.
 
 Change log
 --------
+0.5.4
+* Ironing out path separator bug in some cases on Linux. Unit tests works on linux.
+
 0.5.3
 * Long time request: Added option "packNodeModules:true" to try to pack modules from node_modules directory as well
 ** Needless to mention that there are a lot of dynamic requires in most of the big modules like ExpressJs

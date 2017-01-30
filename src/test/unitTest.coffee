@@ -7,14 +7,14 @@ path = require('path')
 
 
 IS_RE_CREATE_TEST_FILES=true
-
+SEPARATOR=path.sep
 
 
 #exports.testExpressWithModulesPackedToo=(test)->
 #
 #    testFile="lib_compiled/test/resultFiles/express.js"
 #
-#    nodeUglifier=new NodeUglifier("lib_compiled/test/express/server.js",{rngSeed:"hello",packNodeModules:true})
+#    nodeUglifier=new NodeUglifier("lib_compiled/test/express/server.js",{packNodeModules:true})
 #    mergedSource=nodeUglifier.merge().uglify().toString()
 #
 #    try
@@ -151,18 +151,18 @@ relativeToDir=(dir)->
 exports.testPackageUtils=(test)->
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",[]),[])
 
-  shouldBeResult1=[ 'testproject\\depa\\constants.js',
-                    'testproject\\depa\\constants.js.map' ]
+  shouldBeResult1=[ "testproject#{SEPARATOR}depa#{SEPARATOR}constants.js",
+                    "testproject#{SEPARATOR}depa#{SEPARATOR}constants.js.map" ]
   #  console.log(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["./depa/"])) #["main","./depa/","./depb/cryptoLoc.js","./depb/depDeep/deepModule"]
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/",["./depa/"]).map(relativeToDir),shouldBeResult1)
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject",["./depa/"]).map(relativeToDir),shouldBeResult1)
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["./depa/"]).map(relativeToDir),shouldBeResult1)
 
-  shouldBeResult2=[ 'testproject\\main\\main.js',
-                    'testproject\\main\\main.js.map',
-                    'testproject\\depb\\cryptoLoc.js',
-                    'testproject\\depb\\depDeep\\deepModule\\deepModule.js',
-                    'testproject\\depb\\depDeep\\deepModule\\deepModule.js.map' ]
+  shouldBeResult2=[ "testproject#{SEPARATOR}main#{SEPARATOR}main.js",
+                    "testproject#{SEPARATOR}main#{SEPARATOR}main.js.map",
+                    "testproject#{SEPARATOR}depb#{SEPARATOR}cryptoLoc.js",
+                    "testproject#{SEPARATOR}depb#{SEPARATOR}depDeep#{SEPARATOR}deepModule#{SEPARATOR}deepModule.js",
+                    "testproject#{SEPARATOR}depb#{SEPARATOR}depDeep#{SEPARATOR}deepModule#{SEPARATOR}deepModule.js.map" ]
 
 #  console.log(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["main","./depb/cryptoLoc.js","./depb/depDeep/deepModule"]))
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["main","./depb/cryptoLoc.js","./depb/depDeep/deepModule"]).map(relativeToDir),shouldBeResult2)
