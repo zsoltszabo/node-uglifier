@@ -49,7 +49,8 @@
         rngSeed: null,
         licenseFile: null,
         fileExtensions: ["js", "coffee", "json"],
-        suppressFilteredDependentError: false
+        suppressFilteredDependentError: false,
+        packNodeModules: false
       };
       _.extend(this.options, options);
       this.mainFileAbs = path.resolve(mainFile) || path.resolve(process.cwd(), mainFile);
@@ -147,7 +148,7 @@
           return path.normalize(fFile) === path.normalize(filePath);
         }).length > 0;
         ast = packageUtils.getAst(source);
-        requireStatements = packageUtils.getRequireStatements(ast, filePath, _this.fileExtensions);
+        requireStatements = packageUtils.getRequireStatements(ast, filePath, _this.fileExtensions, _this.options.packNodeModules);
         requireStatements.forEach(function(o, i) {
           return requireStatements[i] = _.extend(o, {
             pathSaltedHash: cryptoUtils.getSaltedHash(o.path, _this.hashAlgorithm, _this.salt)

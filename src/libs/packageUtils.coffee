@@ -84,8 +84,9 @@ packageUtils.walkExpressions=(astNode,parentNode,depth)->
 #assume no directory is native module
 #returns the file path of modules if file exists
 #if no extension specified first existing possibleExtensions is used
-packageUtils.getRequireStatements = (ast, file, possibleExtensions = ["js", "coffee"], isOnlyNonNativeNonNpm = true)->
+packageUtils.getRequireStatements = (ast, file, possibleExtensions = ["js", "coffee"], packNodeModules = false)->
     r = []
+    fileDir = path.dirname(file)
 
     handleRequireNode = (text, args)->
 
@@ -97,35 +98,35 @@ packageUtils.getRequireStatements = (ast, file, possibleExtensions = ["js", "cof
         hasPathInIt = (!_.isEmpty(pathOfModuleRaw.match("/")) || !_.isEmpty(pathOfModuleRaw.match(/\\/)))
 
         if hasPathInIt
-            #it is not a module
-            pathOfModuleLoc = path.resolve(fileDir, pathOfModuleRaw)
-            try
-                pathOfModuleLocStats =fs.lstatSync(pathOfModuleLoc)
-            catch me;
-
-            if (pathOfModuleLocStats and pathOfModuleLocStats.isDirectory())
-                pathOfModuleLoc=path.resolve(pathOfModuleLoc, "index")
-
-
-            #if path can be resolved and it is file than it is non native, non npm
-            pathOfModule = packageUtils.getIfNonNativeNotFilteredNonNpm(pathOfModuleLoc, [], possibleExtensions)
-            #        if path.extname(pathOfModuleLoc)==""
-            #          existingExtensions=possibleExtensions.filter((ext)->return fs.existsSync(pathOfModuleLoc + "." + ext))
-            #          if existingExtensions.length>1 then throw new Error("in file: " + file + " multiple matching extensions problem for " + text)
-            #          pathOfModule=if existingExtensions.length==1 then pathOfModuleLoc + "." + existingExtensions[0] else null
-            #        else
-            #          pathOfModule=if fs.existsSync(pathOfModuleLoc) then pathOfModuleLoc else null
-
-            rs = {text, path: pathOfModule}
-            if !isOnlyNonNativeNonNpm || pathOfModule
-                r.push(rs)
-
+            #it is not a module, do nothing
+        else if packNodeModules
+            #find node_module directory, than main in package json if no index.js found
+            pathOfModuleRaw=require.resolve(pathOfModuleRaw)
         else
-            #it is module
+            #it is module and not packed
             return false
 
+        pathOfModuleLoc = path.resolve(fileDir, pathOfModuleRaw)
+        try
+            pathOfModuleLocStats =fs.lstatSync(pathOfModuleLoc)
+        catch me;
 
-    fileDir = path.dirname(file)
+        if (pathOfModuleLocStats and pathOfModuleLocStats.isDirectory())
+            pathOfModuleLoc=path.resolve(pathOfModuleLoc, "index")
+
+
+        #if path can be resolved and it is file than it is non native, non npm
+        pathOfModule = packageUtils.getIfNonNativeNotFilteredNonNpm(pathOfModuleLoc, [], possibleExtensions)
+
+
+        rs = {text, path: pathOfModule}
+        if  pathOfModule
+            r.push(rs)
+
+
+
+
+
     ast.walk(new UglifyJS.TreeWalker(
             (node)->
                 if (node instanceof UglifyJS.AST_Call) && (node.start.value == 'require' || (node.start.value == 'new' and node.expression.print_to_string() == "require"))
@@ -148,7 +149,7 @@ packageUtils.getRequireStatements = (ast, file, possibleExtensions = ["js", "cof
 
                     catch me
                         console.log("Warning!:")
-                        console.log("unhandled require type in file: " + file + " the problematic statement: " + text + " probably something fancy going on " + " the error: " + me.message)
+                        console.log("unhandled require type in file: " + file + " the problematic statement: " + text + " probably something fancy going on! " + " the error: " + me.message)
                     return true
                 else if  (node instanceof UglifyJS.AST_Call) && (node.start.value == 'new' and node.expression.start.value == "(" and node.expression.print_to_string().indexOf("require") != -1)
                     args = node.expression.args

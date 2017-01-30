@@ -14,6 +14,27 @@
 
   IS_RE_CREATE_TEST_FILES = true;
 
+  exports.testExpress = function(test) {
+    var error, me, mergedSource, nodeUglifier, testFile;
+    testFile = "lib_compiled/test/resultFiles/express.js";
+    nodeUglifier = new NodeUglifier("lib_compiled/test/express/server.js", {
+      rngSeed: "hello"
+    });
+    mergedSource = nodeUglifier.merge().uglify().toString();
+    try {
+      eval(mergedSource);
+    } catch (error) {
+      me = error;
+      test.fail(me.toString(), "expected no error thrown from combined project");
+    }
+    if (IS_RE_CREATE_TEST_FILES) {
+      nodeUglifier.exportToFile(testFile);
+    } else {
+      test.equals(packageUtils.readFile(testFile).toString(), mergedSource);
+    }
+    return test.done();
+  };
+
   exports.directoryImportTest = function(test) {
     var error, me, mergedSource, nodeUglifier, testFile;
     testFile = "lib_compiled/test/resultFiles/directoryImportTest.js";
@@ -82,27 +103,6 @@
     var error, me, mergedSource, nodeUglifier, testFile;
     testFile = "lib_compiled/test/resultFiles/es6proj.js";
     nodeUglifier = new NodeUglifier("lib_compiled/test/es6proj/main.js", {
-      rngSeed: "hello"
-    });
-    mergedSource = nodeUglifier.merge().uglify().toString();
-    try {
-      eval(mergedSource);
-    } catch (error) {
-      me = error;
-      test.fail(me.toString(), "expected no error thrown from combined project");
-    }
-    if (IS_RE_CREATE_TEST_FILES) {
-      nodeUglifier.exportToFile(testFile);
-    } else {
-      test.equals(packageUtils.readFile(testFile).toString(), mergedSource);
-    }
-    return test.done();
-  };
-
-  exports.testExpress = function(test) {
-    var error, me, mergedSource, nodeUglifier, testFile;
-    testFile = "lib_compiled/test/resultFiles/express.js";
-    nodeUglifier = new NodeUglifier("lib_compiled/test/express/server.js", {
       rngSeed: "hello"
     });
     mergedSource = nodeUglifier.merge().uglify().toString();

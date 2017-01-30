@@ -39,7 +39,8 @@ class NodeUglifier
             rngSeed: null,
             licenseFile: null,
             fileExtensions: ["js", "coffee", "json"],
-            suppressFilteredDependentError: false
+            suppressFilteredDependentError: false,
+            packNodeModules:false
         }
         _.extend(@options, options)
 
@@ -146,7 +147,7 @@ class NodeUglifier
 
             ast = packageUtils.getAst(source)
 
-            requireStatements = packageUtils.getRequireStatements(ast, filePath, _this.fileExtensions)
+            requireStatements = packageUtils.getRequireStatements(ast, filePath, _this.fileExtensions,_this.options.packNodeModules)
             #add salted hashes of files
             requireStatements.forEach((o, i)-> requireStatements[i] = _.extend(o,
                 {pathSaltedHash: cryptoUtils.getSaltedHash(o.path, _this.hashAlgorithm, _this.salt)}))

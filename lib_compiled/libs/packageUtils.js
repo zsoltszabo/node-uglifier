@@ -110,15 +110,16 @@
     }
   };
 
-  packageUtils.getRequireStatements = function(ast, file, possibleExtensions, isOnlyNonNativeNonNpm) {
+  packageUtils.getRequireStatements = function(ast, file, possibleExtensions, packNodeModules) {
     var fileDir, handleRequireNode, r;
     if (possibleExtensions == null) {
       possibleExtensions = ["js", "coffee"];
     }
-    if (isOnlyNonNativeNonNpm == null) {
-      isOnlyNonNativeNonNpm = true;
+    if (packNodeModules == null) {
+      packNodeModules = false;
     }
     r = [];
+    fileDir = path.dirname(file);
     handleRequireNode = function(text, args) {
       var error, hasPathInIt, me, pathOfModule, pathOfModuleLoc, pathOfModuleLocStats, pathOfModuleRaw, rs;
       pathOfModuleRaw = args[0].value;
@@ -127,28 +128,30 @@
       }
       hasPathInIt = !_.isEmpty(pathOfModuleRaw.match("/")) || !_.isEmpty(pathOfModuleRaw.match(/\\/));
       if (hasPathInIt) {
-        pathOfModuleLoc = path.resolve(fileDir, pathOfModuleRaw);
-        try {
-          pathOfModuleLocStats = fs.lstatSync(pathOfModuleLoc);
-        } catch (error) {
-          me = error;
-        }
-        if (pathOfModuleLocStats && pathOfModuleLocStats.isDirectory()) {
-          pathOfModuleLoc = path.resolve(pathOfModuleLoc, "index");
-        }
-        pathOfModule = packageUtils.getIfNonNativeNotFilteredNonNpm(pathOfModuleLoc, [], possibleExtensions);
-        rs = {
-          text: text,
-          path: pathOfModule
-        };
-        if (!isOnlyNonNativeNonNpm || pathOfModule) {
-          return r.push(rs);
-        }
+
+      } else if (packNodeModules) {
+        pathOfModuleRaw = require.resolve(pathOfModuleRaw);
       } else {
         return false;
       }
+      pathOfModuleLoc = path.resolve(fileDir, pathOfModuleRaw);
+      try {
+        pathOfModuleLocStats = fs.lstatSync(pathOfModuleLoc);
+      } catch (error) {
+        me = error;
+      }
+      if (pathOfModuleLocStats && pathOfModuleLocStats.isDirectory()) {
+        pathOfModuleLoc = path.resolve(pathOfModuleLoc, "index");
+      }
+      pathOfModule = packageUtils.getIfNonNativeNotFilteredNonNpm(pathOfModuleLoc, [], possibleExtensions);
+      rs = {
+        text: text,
+        path: pathOfModule
+      };
+      if (pathOfModule) {
+        return r.push(rs);
+      }
     };
-    fileDir = path.dirname(file);
     ast.walk(new UglifyJS.TreeWalker(function(node) {
       var args, error, me, ref, requireArgs, text, text2, walkedArgs;
       if ((node instanceof UglifyJS.AST_Call) && (node.start.value === 'require' || (node.start.value === 'new' && node.expression.print_to_string() === "require"))) {
@@ -168,7 +171,7 @@
         } catch (error) {
           me = error;
           console.log("Warning!:");
-          console.log("unhandled require type in file: " + file + " the problematic statement: " + text + " probably something fancy going on " + " the error: " + me.message);
+          console.log("unhandled require type in file: " + file + " the problematic statement: " + text + " probably something fancy going on! " + " the error: " + me.message);
         }
         return true;
       } else if ((node instanceof UglifyJS.AST_Call) && (node.start.value === 'new' && node.expression.start.value === "(" && node.expression.print_to_string().indexOf("require") !== -1)) {

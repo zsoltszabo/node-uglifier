@@ -9,6 +9,46 @@ path = require('path')
 IS_RE_CREATE_TEST_FILES=true
 
 
+
+#exports.testExpressWithModulesPackedToo=(test)->
+#
+#    testFile="lib_compiled/test/resultFiles/express.js"
+#
+#    nodeUglifier=new NodeUglifier("lib_compiled/test/express/server.js",{rngSeed:"hello",packNodeModules:true})
+#    mergedSource=nodeUglifier.merge().uglify().toString()
+#
+#    try
+#        eval(mergedSource)
+#    catch me
+#        test.fail(me.toString(),"expected no error thrown from combined project")
+#
+#
+#    if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
+#    else
+#        test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+#
+#    test.done()
+
+exports.testExpress=(test)->
+
+    testFile="lib_compiled/test/resultFiles/express.js"
+
+    nodeUglifier=new NodeUglifier("lib_compiled/test/express/server.js",{rngSeed:"hello"})
+    mergedSource=nodeUglifier.merge().uglify().toString()
+
+    try
+        eval(mergedSource)
+    catch me
+        test.fail(me.toString(),"expected no error thrown from combined project")
+
+
+    if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
+    else
+        test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+
+    test.done()
+
+
 exports.directoryImportTest=(test)->
 
     testFile="lib_compiled/test/resultFiles/directoryImportTest.js"
@@ -93,24 +133,7 @@ exports.testEs6=(test)->
 
     test.done()
 
-exports.testExpress=(test)->
 
-    testFile="lib_compiled/test/resultFiles/express.js"
-
-    nodeUglifier=new NodeUglifier("lib_compiled/test/express/server.js",{rngSeed:"hello"})
-    mergedSource=nodeUglifier.merge().uglify().toString()
-
-    try
-        eval(mergedSource)
-    catch me
-        test.fail(me.toString(),"expected no error thrown from combined project")
-
-
-    if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
-    else
-        test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
-
-    test.done()
 
 exports.testStuff=(test)->
   t0="./test/test2"
