@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "depB.js",
+  "sourceRoot": "..\\..\\..\\src\\test\\testCycleDetection",
+  "sources": [
+    "depB.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA;;EAAA,CAAA,GAAE,OAAA,CAAQ,QAAR;AAAF"
+}

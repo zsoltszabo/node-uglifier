@@ -3,10 +3,105 @@ fsExtra = require('fs-extra');
 NodeUglifier=require("../NodeUglifier")
 packageUtils=require('../libs/packageUtils')
 path = require('path')
+domain = require('domain');
 #_=require("\x6e\x64\x65\x72\x73\x63\x6f\x72\x65\x6e")
 
 
 IS_RE_CREATE_TEST_FILES=true
+SEPARATOR=path.sep
+
+
+#exports.testExpressWithModulesPackedToo=(test)->
+#
+#    testFile="lib_compiled/test/resultFiles/express.js"
+#
+#    nodeUglifier=new NodeUglifier("lib_compiled/test/express/server.js",{packNodeModules:true})
+#    mergedSource=nodeUglifier.merge().uglify().toString()
+#
+#    try
+#        eval(mergedSource)
+#    catch me
+#        test.fail(me.toString(),"expected no error thrown from combined project")
+#
+#
+#    if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
+#    else
+#        test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+#
+#    test.done()
+Function.prototype.withDomain = (withStack)->
+    fn = this;
+    return (test)->
+        d = domain.create();
+        d.on('error', (e)->
+            test.fail('test failed with ' + e.message);
+            if(withStack)
+                console.error(e.stack)
+            test.done();
+        )
+        d.run(fn.bind(this, test));
+
+
+testCycleDetection=(test)->
+    testFile="lib_compiled/test/resultFiles/testCycleDetection.js"
+
+    try
+        nodeUglifier=new NodeUglifier("lib_compiled/test/testCycleDetection/main.js",{rngSeed:"hello"})
+        mergedSource=nodeUglifier.merge().uglify().toString()
+        eval(mergedSource)
+    catch me
+        expectedFirstLine='There has been 2 cycles in the dependency tree:'
+        got=me.message[0..expectedFirstLine.length-1]
+        if got!=expectedFirstLine
+            throw me
+            test.fail(me.toString(),"expected no error thrown from combined project")
+
+
+
+    if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
+    else
+        test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+    test.done()
+exports.testCycleDetection=testCycleDetection
+
+exports.testExpress=(test)->
+
+    testFile="lib_compiled/test/resultFiles/express.js"
+
+    nodeUglifier=new NodeUglifier("lib_compiled/test/express/server.js",{rngSeed:"hello"})
+    mergedSource=nodeUglifier.merge().uglify().toString()
+
+    try
+        eval(mergedSource)
+    catch me
+        test.fail(me.toString(),"expected no error thrown from combined project")
+
+
+    if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
+    else
+        test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+
+    test.done()
+
+
+exports.directoryImportTest=(test)->
+
+    testFile="lib_compiled/test/resultFiles/directoryImportTest.js"
+
+    nodeUglifier=new NodeUglifier("lib_compiled/test/testDirectoryImport/main.js",{rngSeed:"hello"})
+    mergedSource=nodeUglifier.merge().toString()
+
+    try
+        eval(mergedSource)
+    catch me
+        test.fail(me.toString(),"expected no error thrown from combined project")
+
+
+    if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
+    else
+        test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
+
+    test.done()
 
 exports.testMergeWithBothExportFilterTypes=(test)->
 
@@ -51,6 +146,9 @@ exports.testJsonImport=(test)->
 
   test.done()
 
+
+
+
 exports.testEs6=(test)->
 
     testFile="lib_compiled/test/resultFiles/es6proj.js"
@@ -70,24 +168,7 @@ exports.testEs6=(test)->
 
     test.done()
 
-exports.testExpress=(test)->
 
-    testFile="lib_compiled/test/resultFiles/express.js"
-
-    nodeUglifier=new NodeUglifier("lib_compiled/test/express/server.js",{rngSeed:"hello"})
-    mergedSource=nodeUglifier.merge().uglify().toString()
-
-    try
-        eval(mergedSource)
-    catch me
-        test.fail(me.toString(),"expected no error thrown from combined project")
-
-
-    if IS_RE_CREATE_TEST_FILES then nodeUglifier.exportToFile(testFile)
-    else
-        test.equals(packageUtils.readFile(testFile).toString(),mergedSource)
-
-    test.done()
 
 exports.testStuff=(test)->
   t0="./test/test2"
@@ -105,18 +186,18 @@ relativeToDir=(dir)->
 exports.testPackageUtils=(test)->
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",[]),[])
 
-  shouldBeResult1=[ 'testproject\\depa\\constants.js',
-                    'testproject\\depa\\constants.js.map' ]
+  shouldBeResult1=[ "testproject#{SEPARATOR}depa#{SEPARATOR}constants.js",
+                    "testproject#{SEPARATOR}depa#{SEPARATOR}constants.js.map" ]
   #  console.log(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["./depa/"])) #["main","./depa/","./depb/cryptoLoc.js","./depb/depDeep/deepModule"]
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/",["./depa/"]).map(relativeToDir),shouldBeResult1)
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject",["./depa/"]).map(relativeToDir),shouldBeResult1)
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["./depa/"]).map(relativeToDir),shouldBeResult1)
 
-  shouldBeResult2=[ 'testproject\\main\\main.js',
-                    'testproject\\main\\main.js.map',
-                    'testproject\\depb\\cryptoLoc.js',
-                    'testproject\\depb\\depDeep\\deepModule\\deepModule.js',
-                    'testproject\\depb\\depDeep\\deepModule\\deepModule.js.map' ]
+  shouldBeResult2=[ "testproject#{SEPARATOR}main#{SEPARATOR}main.js",
+                    "testproject#{SEPARATOR}main#{SEPARATOR}main.js.map",
+                    "testproject#{SEPARATOR}depb#{SEPARATOR}cryptoLoc.js",
+                    "testproject#{SEPARATOR}depb#{SEPARATOR}depDeep#{SEPARATOR}deepModule#{SEPARATOR}deepModule.js",
+                    "testproject#{SEPARATOR}depb#{SEPARATOR}depDeep#{SEPARATOR}deepModule#{SEPARATOR}deepModule.js.map" ]
 
 #  console.log(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["main","./depb/cryptoLoc.js","./depb/depDeep/deepModule"]))
   test.deepEqual(packageUtils.getMatchingFiles("lib_compiled/test/testproject/main.js",["main","./depb/cryptoLoc.js","./depb/depDeep/deepModule"]).map(relativeToDir),shouldBeResult2)

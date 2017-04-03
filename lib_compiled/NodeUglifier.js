@@ -15,6 +15,8 @@
 
   sugar = require('sugar');
 
+  sugar.extend();
+
   path = require('path');
 
   packageUtils = require('./libs/packageUtils');
@@ -49,7 +51,8 @@
         rngSeed: null,
         licenseFile: null,
         fileExtensions: ["js", "coffee", "json"],
-        suppressFilteredDependentError: false
+        suppressFilteredDependentError: false,
+        packNodeModules: false
       };
       _.extend(this.options, options);
       this.mainFileAbs = path.resolve(mainFile) || path.resolve(process.cwd(), mainFile);
@@ -94,7 +97,7 @@
       var relFile, relFileNoExt;
       relFile = relPathFn(pathAbs);
       relFileNoExt = relFile.replace(path.extname(relFile), "");
-      return "require('./" + relFileNoExt.replace("\\", "/") + "')";
+      return "require('./" + relFileNoExt.replace(/\\/g, "/") + "')";
     };
 
     NodeUglifier.prototype.addWrapper = function(source, serial) {
@@ -147,7 +150,7 @@
           return path.normalize(fFile) === path.normalize(filePath);
         }).length > 0;
         ast = packageUtils.getAst(source);
-        requireStatements = packageUtils.getRequireStatements(ast, filePath, _this.fileExtensions);
+        requireStatements = packageUtils.getRequireStatements(ast, filePath, _this.fileExtensions, _this.options.packNodeModules);
         requireStatements.forEach(function(o, i) {
           return requireStatements[i] = _.extend(o, {
             pathSaltedHash: cryptoUtils.getSaltedHash(o.path, _this.hashAlgorithm, _this.salt)

@@ -1,9 +1,9 @@
 {
   "version": 3,
   "file": "Errors.js",
-  "sourceRoot": "..\\..",
+  "sourceRoot": "..\\..\\src\\libs",
   "sources": [
-    "src\\libs\\Errors.coffee"
+    "Errors.coffee"
   ],
   "names": [],
   "mappings": ";AAEA;AAAA,MAAA,wBAAA;IAAA;;;EAAA,IAAA,GAAK,OAAA,CAAQ,MAAR;;EAEC;;;IACS,4BAAC,cAAD;AACX,UAAA;MAAA,IAAC,CAAA,IAAD,GAAQ;MACR,IAAC,CAAA,MAAD,GAAQ;MAER,GAAA,GAAI,iBAAA,GAAoB,cAAc,CAAC,MAAnC,GAA4C,oCAA5C,GAAmF,IAAI,CAAC,OAAL,CAAa,cAAb,EAA4B;QAAE,UAAA,EAAY,IAAd;QAAoB,KAAA,EAAO,IAA3B;OAA5B;AACvF,aAAO,oDAAM,GAAN;IALI;;;;KADkB;;EASjC,MAAM,CAAC,OAAO,CAAC,kBAAf,GAAmC;AAXnC"

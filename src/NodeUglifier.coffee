@@ -12,7 +12,7 @@ Graph = require("./libs/js-graph-mod/src/js-graph")
 fsExtra = require('fs-extra');
 fs = require('fs');
 _ = require('underscore')
-sugar = require('sugar')
+sugar = require('sugar');sugar.extend();
 path = require('path')
 packageUtils = require('./libs/packageUtils')
 cryptoUtils = require('./libs/cryptoUtils')
@@ -39,7 +39,8 @@ class NodeUglifier
             rngSeed: null,
             licenseFile: null,
             fileExtensions: ["js", "coffee", "json"],
-            suppressFilteredDependentError: false
+            suppressFilteredDependentError: false,
+            packNodeModules:false
         }
         _.extend(@options, options)
 
@@ -87,7 +88,7 @@ class NodeUglifier
     getRequireSubstitutionForFilteredWithExport: (pathAbs, relPathFn)=>
         relFile = relPathFn(pathAbs)
         relFileNoExt = relFile.replace(path.extname(relFile), "")
-        return "require('./" + relFileNoExt.replace("\\", "/") + "')"
+        return "require('./" + relFileNoExt.replace(/\\/g, "/") + "')"
 
 
 
@@ -146,7 +147,7 @@ class NodeUglifier
 
             ast = packageUtils.getAst(source)
 
-            requireStatements = packageUtils.getRequireStatements(ast, filePath, _this.fileExtensions)
+            requireStatements = packageUtils.getRequireStatements(ast, filePath, _this.fileExtensions,_this.options.packNodeModules)
             #add salted hashes of files
             requireStatements.forEach((o, i)-> requireStatements[i] = _.extend(o,
                 {pathSaltedHash: cryptoUtils.getSaltedHash(o.path, _this.hashAlgorithm, _this.salt)}))

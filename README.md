@@ -113,8 +113,20 @@ It is tested on Windows if you find problems on Linux please contact me.
 
 Change log
 --------
+0.5.4
+* Ironing out path separator bug in some cases on Linux. Unit tests works on linux.
+
+0.5.3
+* Long time request: Added option "packNodeModules:true" to try to pack modules from node_modules directory as well
+** Needless to mention that there are a lot of dynamic requires in most of the big modules like ExpressJs
+** So one would need to build a generic solution to solve this like indexing and caching all files and writing stub functions
+** And it could still go horribly wrong with native modules. So it is beyond the scope atm.
+
+0.5.2
+* Added directory index require support
+
 0.5.1
-*Added express server test case
+* Added express server test case
 
 0.5
 * Updated dependencies (resolved 'requireStatements.each is not a function' bug from new SugarJs version)
