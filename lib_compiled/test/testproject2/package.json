@@ -30,7 +30,7 @@
 		"helmet": "~0.4.0",
 		"consolidate": "~0.10.0",
 		"swig": "~1.4.1",
-		"mongoose": "~3.8.8",
+		"mongoose": "~5.7.6",
 		"passport": "~0.2.0",
 		"passport-local": "~1.0.0",
 		"passport-facebook": "~1.0.2",
