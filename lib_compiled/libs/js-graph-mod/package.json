@@ -32,7 +32,7 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "bower": "~1.1.2",
+    "bower": "~1.8.8",
     "grunt": "~0.4.1",
     "grunt-contrib-compress": "^0.8.0",
     "grunt-contrib-copy": "^0.5.0",
